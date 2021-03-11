@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\tingw\\Documents\\快速鍵偵測程式'],
+             pathex=[os.path.abspath(SPECPATH)],
              binaries=[],
              datas=[],
              hiddenimports=[],
