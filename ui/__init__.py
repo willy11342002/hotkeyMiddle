@@ -1,12 +1,17 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
-from pathlib import Path
+
+from ui.components.hotkey_edit import HotKeyEdit
+from ui.components.editor import Editor
+from ui.components.editor import EditorTabWidget
+from ui.components.fileexplorer import FileLink
+from ui.components.fileexplorer import FileExplorer
 
 from trigger import KeyboardTrigger
 from trigger import MouseTrigger
-from ui.component import HotKeyEdit
 from utils.path import Dict
+from pathlib import Path
 from utils.vk import VK
 import pynput
 import copy
@@ -89,6 +94,8 @@ class Script:
         self.editor.pb_click_keyboard.setEnabled(not bool(idx))
         self.editor.tb_script.setEnabled(not bool(idx))
         self.editor.te_record.setEnabled(not bool(idx))
+        self.editor.pb_screencheck.setEnabled(not bool(idx))
+        self.editor.pb_screenshot.setEnabled(not bool(idx))
 
     # 關閉腳本(關閉頁簽)
     def close_editor(self):
@@ -126,203 +133,3 @@ class Script:
         pass
     def on_scroll(x, y, dx, dy):
         pass
-
-
-# 左側檔案總管
-class FileLink(QtWidgets.QTreeWidgetItem):
-    def __init__(self, script, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.script = script
-        self.setFlags(self.flags() | QtCore.Qt.ItemIsEditable)
-
-    @property
-    def path(self):
-        return self.script.path
-    @path.setter
-    def path(self, path):
-        self.script.path = path
-
-class FileExplorer(QtWidgets.QTreeWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # 設定樣式
-        style = QtWidgets.QApplication.style()
-        self.icon_dir_open = style.standardIcon(QtWidgets.QStyle.SP_DirOpenIcon)
-        self.icon_dir_close = style.standardIcon(QtWidgets.QStyle.SP_DirClosedIcon)
-        self.icon_pause = style.standardIcon(QtWidgets.QStyle.SP_MediaPause)
-        self.icon_run = style.standardIcon(QtWidgets.QStyle.SP_MediaPlay)
-        # 綁定功能
-        self.itemExpanded.connect(self.item_expanded)
-        self.itemCollapsed.connect(self.item_collapsed)
-
-    # 展開、收合類別
-    def item_expanded(self, item):
-        item.setIcon(0, self.icon_dir_open)
-    def item_collapsed(self, item):
-        item.setIcon(0, self.icon_dir_close)
-
-
-#  右側編輯器
-from .editor import Ui_ScriptEditor
-class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
-    def __init__(self, script, *args, **kwargs):
-        super().__init__()
-        self.script = script
-        self.unsave = False
-        self.steps = []
-        self.setupUi(self)
-        self.read_data()
-
-        self.ccb_activate.currentIndexChanged.connect(
-            lambda idx: self.change_data('BASIC', 'activate', bool(idx)))
-        self.le_start_hotkey.textChanged.connect(
-            lambda txt: self.change_data('BASIC', 'start_hotkey', self.le_start_hotkey.PRESSED_KEY_VK))
-        self.le_stop_hotkey.textChanged.connect(
-            lambda txt: self.change_data('BASIC', 'stop_hotkey', self.le_stop_hotkey.PRESSED_KEY_VK))
-        self.rb_once.toggled.connect(
-            lambda: self.change_data('BASIC', 'category', 'once') and self.le_stop_hotkey.setEnabled(False))
-        self.rb_while.toggled.connect(
-            lambda: self.change_data('BASIC', 'category', 'while') and self.le_stop_hotkey.setEnabled(True))
-        self.te_descript.textChanged.connect(
-            lambda: self.change_data('BASIC', 'descript', self.te_descript.toPlainText()))
-        self.te_record.textChanged.connect(
-            lambda: self.change_data('RECORD', 'content', self.te_record.toPlainText()))
-
-        self.pb_click_mouse.clicked.connect(
-            lambda: self.add_trigger())
-        self.pb_click_keyboard.clicked.connect(
-            lambda: self.add_trigger())
-
-    @property
-    def path(self):
-        return self.script.path
-    @path.setter
-    def path(self, path):
-        self.script.path = path
-
-    @property
-    def unsave(self):
-        return self._unsave
-    @unsave.setter
-    def unsave(self, value):
-        self._unsave = value
-        idx = self.script.mainwindow.main_script.indexOf(self)
-        if idx != -1:
-            self.script.mainwindow.main_script.setTabText(idx, self.tab_text)
-        self.script.tree.setText(0, self.tab_text)
-
-    @property
-    def tab_text(self):
-        return f'{"* " if self._unsave else ""}{self.path.stem}'
-
-    # 腳本內容存讀
-    def change_data(self, section, key, value):
-        self.data[section][key] = value
-        self.unsave = self.data != self._data
-        return True
-    def read_data(self):
-        if self.path.is_dir():
-            self.data = Dict()
-            return
-        if not self.path.read_text():
-            self.data = Dict({
-                'BASIC': {
-                    'activate': False,
-                    'start_hotkey': [121],
-                    'stop_hotkey': [123],
-                    'descript': '',
-                    'category': 'once'
-                },
-                'SCRIPT': {
-                    'content': ''
-                },
-                'RECORD': {
-                    'content': ''
-                },
-            })
-            self._data = copy.deepcopy(self.data)
-            self.data.dump_json(self.path)
-            return
-        # 讀取資料
-        self.data = Dict.load_json(self.path)
-        self._data = copy.deepcopy(self.data)
-        self.unsave = False
-        # 調整畫面
-        self.ccb_activate.setCurrentIndex(int(self.data.BASIC.activate))
-        self.le_start_hotkey.PRESSED_KEY_VK = self.data.BASIC.start_hotkey
-        self.le_stop_hotkey.PRESSED_KEY_VK = self.data.BASIC.stop_hotkey
-        self.te_descript.setText(self.data.BASIC.descript)
-        for i, data in enumerate(self.data.SCRIPT.content):
-            self.add_trigger(row=i, data=data)
-        return self.data
-    def save_data(self, path=None):
-        path = path or self.path
-        self.data['SCRIPT']['content'] = [
-            self.tb_script.cellWidget(row, 0).data
-            for row in range(self.tb_script.rowCount())
-        ]
-        self.data.dump_json(path)
-        self._data = copy.deepcopy(self.data)
-        self.unsave = False
-
-    # 腳本設計
-    def move_up_trigger(self, trigger):
-        for row in range(self.tb_script.rowCount()):
-            first = self.tb_script.cellWidget(row, 0)
-            if row != 0 and first == trigger.first:
-                self.tb_script.removeRow(row)
-                self.add_trigger(row=row-1, data=trigger.data)
-                self.data.SCRIPT.content.insert(row-1, self.data.SCRIPT.content.pop(row))
-                break
-        self.unsave = self.data != self._data
-    def move_down_trigger(self, trigger):
-        for row in range(self.tb_script.rowCount()):
-            first = self.tb_script.cellWidget(row, 0)
-            if row != self.tb_script.rowCount()-1 and first == trigger.first:
-                self.tb_script.removeRow(row)
-                self.add_trigger(row=row+1, data=trigger.data)
-                self.data.SCRIPT.content.insert(row+1, self.data.SCRIPT.content.pop(row))
-                break
-        self.unsave = self.data != self._data
-    def remove_trigger(self, trigger):
-        for row in range(self.tb_script.rowCount()):
-            first = self.tb_script.cellWidget(row, 0)
-            if first == trigger.first:
-                self.tb_script.removeRow(row)
-                self.data.SCRIPT.content.pop(row)
-                break
-        self.unsave = self.data != self._data
-    def add_trigger(self, row=None, data=None):
-        row = row or self.tb_script.currentRow()
-        row = 0 if row == -1 else row
-
-        if data:
-            _class = globals()[data['class_name']]
-            trigger = _class(self, data)
-            first, label, widget = trigger.ui
-        else:
-            pb = self.sender()
-            if pb == self.pb_click_mouse:
-                trigger = MouseTrigger(self, data)
-                first, label, widget = trigger.ui
-            elif pb == self.pb_click_keyboard:
-                trigger = KeyboardTrigger(self, data)
-                first, label, widget = trigger.ui
-            self.data.SCRIPT.content.insert(row, data)
-            self.unsave = self.data != self._data
-
-        self.tb_script.insertRow(row)
-        self.tb_script.setCellWidget(row, 0, first)
-        self.tb_script.setCellWidget(row, 1, label)
-        self.tb_script.setCellWidget(row, 2, widget)
-        self.tb_script.verticalHeader().resizeSection(row, 50)
-
-
-class EditorTabWidget(QtWidgets.QTabWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setTabBar(QtWidgets.QTabBar())
-        self.tabBar().setAutoHide(False)
-
-
-from .main import Ui_MainWindow
