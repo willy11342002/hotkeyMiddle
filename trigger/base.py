@@ -44,18 +44,18 @@ class BaseTrigger:
                 obj.setPlaceholderText(value.placeholder)
                 obj.setText(self.data[key])
                 obj.textChanged.connect(
-                    lambda txt: self.change_data(key, txt))
+                    lambda txt, key=key, obj=obj: self.change_data(key, obj.text()))
             if value.class_name == 'QComboBox':
                 obj = QtWidgets.QComboBox(self.widget)
                 obj.addItems(value.choices)
                 obj.setCurrentIndex(self.data[key])
                 obj.currentIndexChanged.connect(
-                    lambda idx: self.change_data(key, idx))
+                    lambda idx, key=key, obj=obj: self.change_data(key, obj.currentIndex()))
             if value.class_name == 'HotKeyEdit':
                 obj = HotKeyEdit(single_mode=True)
                 obj.PRESSED_KEY_VK = self.data[key]
                 obj.textChanged.connect(
-                    lambda txt: self.change_data(key, obj.PRESSED_KEY_VK))
+                    lambda txt, key=key, obj=obj: self.change_data(key, obj.PRESSED_KEY_VK))
             setattr(self, key, obj)
             self.hlayout.addWidget(obj)
 
