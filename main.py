@@ -1,14 +1,16 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
-from pathlib import Path
+
+from ui.main import Ui_MainWindow
 from utils.path import Dict
 from utils.path import walk
+from pathlib import Path
 import sys
 import ui
 
 
-class MainWindow(QtWidgets.QMainWindow, ui.Ui_MainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.setupUi(self)
@@ -52,8 +54,14 @@ class MainWindow(QtWidgets.QMainWindow, ui.Ui_MainWindow):
     def load_list(self):
         for dirpath, dirnames, filenames in walk('data'):
             for dirname in dirnames:
+                if dirname.parent != Path('data'):
+                    continue
                 self.create_category(path=dirname)
             for filename in filenames:
+                if filename.parent.parent != Path('data'):
+                    continue
+                if not filename.name.endswith('.ini'):
+                    continue
                 self.create_script(path=filename)
 
     # 新增類別
