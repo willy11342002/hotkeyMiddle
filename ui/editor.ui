@@ -212,6 +212,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="rb_while">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="font">
              <font>
               <family>微軟正黑體</family>

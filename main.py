@@ -2,7 +2,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from pathlib import Path
-import werdsazxc
+from utils.path import Dict
+from utils.path import walk
 import sys
 import ui
 
@@ -13,7 +14,7 @@ class MainWindow(QtWidgets.QMainWindow, ui.Ui_MainWindow):
         self.setupUi(self)
         self.show()
 
-        self.dic_scripts = werdsazxc.Dict()
+        self.dic_scripts = Dict()
 
         style = QtWidgets.QApplication.style()
         self.icon_checked = style.standardIcon(QtWidgets.QStyle.SP_DialogApplyButton)
@@ -49,7 +50,7 @@ class MainWindow(QtWidgets.QMainWindow, ui.Ui_MainWindow):
 
     # 讀取完整清單
     def load_list(self):
-        for dirpath, dirnames, filenames in werdsazxc.walk('data'):
+        for dirpath, dirnames, filenames in walk('data'):
             for dirname in dirnames:
                 self.create_category(path=dirname)
             for filename in filenames:

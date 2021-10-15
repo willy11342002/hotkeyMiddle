@@ -1,10 +1,12 @@
-import pynput._util.win32_vks as VK
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from pathlib import Path
 
-import werdsazxc
+from trigger import KeyboardTrigger
+from trigger import MouseTrigger
+from ui.component import HotKeyEdit
+from utils.path import Dict
 import pynput
 import copy
 
@@ -27,11 +29,7 @@ class Script:
         self.editor = Editor(self)
 
         self.editor.ccb_activate.currentIndexChanged.connect(self.switch_status)
-        dic_icon = dict(enumerate([
-            self.mainwindow.tree_scripts.icon_pause,
-            self.mainwindow.tree_scripts.icon_run,
-        ]))
-        self.tree.setIcon(0, dic_icon[self.editor.ccb_activate.currentIndex()])
+        self.switch_status(self.editor.ccb_activate.currentIndex())
 
         # 偵測快速鍵
         self.pressing_key = set()
@@ -73,15 +71,23 @@ class Script:
         if not self.is_open:
             self.mainwindow.main_script.addTab(self.editor, self.editor.tab_text)
             self.is_open = True
-            return
         self.activate_editor()
 
+    # 切換啟用/停用，同時修改左側圖示及右側各選項是否可修改
     def switch_status(self, idx):
         dic_icon = dict(enumerate([
             self.mainwindow.tree_scripts.icon_pause,
             self.mainwindow.tree_scripts.icon_run,
         ]))
         self.tree.setIcon(0, dic_icon[idx])
+        self.editor.le_start_hotkey.setEnabled(not bool(idx))
+        self.editor.le_stop_hotkey.setEnabled(
+            not bool(idx) and self.editor.rb_while.isChecked())
+        self.editor.te_descript.setEnabled(not bool(idx))
+        self.editor.pb_click_mouse.setEnabled(not bool(idx))
+        self.editor.pb_click_keyboard.setEnabled(not bool(idx))
+        self.editor.tb_script.setEnabled(not bool(idx))
+        self.editor.te_record.setEnabled(not bool(idx))
 
     # 關閉腳本(關閉頁簽)
     def close_editor(self):
@@ -113,20 +119,21 @@ class Script:
                 vk = key._value_.vk
             self.pressing_key.add(vk)
             self.editor.le_start_hotkey.PRESSED_KEY_VK = self.editor.data.BASIC.start_hotkey
-            print(self.pressing_key)
-            print(set(self.editor.le_start_hotkey.PRESSED_KEY_VK))
             if not (set(self.editor.le_start_hotkey.PRESSED_KEY_VK) - self.pressing_key):
                 self.pressing_key.clear()
                 self.run_script()
     def on_release(self, key):
         '''釋放按鈕後從集合中移出'''
-        try:
-            vk = getattr(key, 'vk', None)
-            if not vk:
-                vk = getattr(VK, key._name_.upper(), None)
-            self.pressing_key.remove(vk)
-        except KeyError as e:
-            pass
+        vk = getattr(key, 'vk', None)
+        if not vk:
+            vk = {
+                'alt_l': 18, 'alt_r': 18,
+                'shift_l': 16, 'shift_r': 16,
+                'ctrl_l': 17, 'ctrl_r': 17,
+            }.get(key._name_)
+        if not vk:
+            vk = key._value_.vk
+        self.pressing_key.discard(vk)
 
     # 滑鼠偵測
     def on_move(x, y):
@@ -172,197 +179,6 @@ class FileExplorer(QtWidgets.QTreeWidget):
 
 
 #  右側編輯器
-class HotKeyEdit(QtWidgets.QLineEdit):
-    DIC_VIRTUALKEY = {v:k for k, v in vars(VK).items() if type(v) == int}
-    DIC_VIRTUALKEY = {
-        **DIC_VIRTUALKEY,
-        18: "ALT", 192: "`", 27: "ESC", 33: "PAGE UP", 34: "PAGE DOWN",
-        111: "NUMPAD/", 106: "NUMPAD*", 107: "NUMPAD+", 109: "NUMPAD-", 110: "NUMPAD.",
-        49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54:"6", 55: "7", 56: "8", 57: "9", 58: "0",
-        65: "A", 66: "B", 67: "C", 68: "D", 69: "E", 70:"F", 71: "G", 72: "H", 73: "I", 74: "J",
-        75: "K", 76: "L", 77: "M", 78: "N", 79: "O", 80:"P", 81: "Q", 82: "R", 83: "S", 84: "T",
-        85: "U", 86: "V", 87: "W", 88: "X", 89: "Y", 90:"Z"
-    }
-    _PRESSED_KEY = set()
-    def __init__(self, master=None, single_mode=False, *args, **kwargs):
-        self.single_mode = single_mode
-        super().__init__(master, *args, **kwargs)
-        self.setAttribute(QtCore.Qt.WA_InputMethodEnabled, False)
-
-    @property
-    def PRESSED_KEY_VK(self):
-        return list(map(lambda key: key.vk, self._PRESSED_KEY))
-    @PRESSED_KEY_VK.setter
-    def PRESSED_KEY_VK(self, vks):
-        self._PRESSED_KEY = set(map(pynput.keyboard.KeyCode.from_vk, vks))
-        self.setText('+'.join(self.PRESSED_KEY_STR))
-    @property
-    def PRESSED_KEY_STR(self):
-        return list(map(self.get_human_key, self.PRESSED_KEY_VK))
-
-    # 字元轉換
-    def get_human_key(self, vk):
-        hkey = self.DIC_VIRTUALKEY.get(vk, 'Unknow')
-        return hkey
-    def get_vk(self, event):
-        return event.nativeVirtualKey()
-    # 按鍵綁定
-    def keyPressEvent(self, event):
-        if self.single_mode and self._PRESSED_KEY:
-            return
-        vk = self.get_vk(event)
-        pkey = pynput.keyboard.KeyCode.from_vk(vk)
-        self._PRESSED_KEY.add(pkey)
-        self.setText('+'.join(self.PRESSED_KEY_STR))
-    def keyReleaseEvent(self, event):
-        try:
-            vk = self.get_vk(event)
-            pkey = pynput.keyboard.KeyCode.from_vk(vk)
-            self._PRESSED_KEY.remove(pkey)
-        except KeyError as e:
-            pass
-
-
-class MouseTrigger:
-    def __init__(self, editor, data=None):
-        self.editor = editor
-        self._data = data or {
-            'class_name': self.__class__.__name__,
-            'cbb1': 0,
-            'cbb2': 0
-        }
-        self.init_ui()
-        self.first.data = self.data
-        self.first.activate = self.activate
-        self.pb_delete.clicked.connect(lambda: editor.remove_trigger(self))
-        self.pb_up.clicked.connect(lambda: editor.move_up_trigger(self))
-        self.pb_down.clicked.connect(lambda: editor.move_down_trigger(self))
-
-        self.cbb1.currentIndexChanged.connect(
-            lambda idx: self.change_data('cbb1', idx))
-        self.cbb2.currentIndexChanged.connect(
-            lambda idx: self.change_data('cbb2', idx))
-
-    def init_ui(self):
-        self.first = QtWidgets.QWidget()
-        self.hlayout1 = QtWidgets.QHBoxLayout(self.first)
-        self.pb_up = QtWidgets.QPushButton()
-        self.pb_up.setText('↑')
-        self.pb_delete = QtWidgets.QPushButton()
-        self.pb_delete.setText('X')
-        self.pb_down = QtWidgets.QPushButton()
-        self.pb_down.setText('↓')
-        self.hlayout1.addWidget(self.pb_up)
-        self.hlayout1.addWidget(self.pb_delete)
-        self.hlayout1.addWidget(self.pb_down)
-
-        self.label = QtWidgets.QLabel('滑鼠操作')
-        self.widget = QtWidgets.QWidget()
-        self.hlayout = QtWidgets.QHBoxLayout(self.widget)
-
-        self.cbb1 = QtWidgets.QComboBox(self.widget)
-        self.cbb1.addItems(['單擊', '雙擊'])
-        self.cbb1.setCurrentIndex(self.data['cbb1'])
-
-        self.cbb2 = QtWidgets.QComboBox(self.widget)
-        self.cbb2.addItems(['左鍵', '中鍵', '右鍵'])
-        self.cbb2.setCurrentIndex(self.data['cbb2'])
-
-        self.space = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-
-        self.hlayout.addWidget(self.cbb1)
-        self.hlayout.addWidget(self.cbb2)
-        self.hlayout.addItem(self.space)
-
-    def change_data(self, key, value):
-        self._data[key] = value
-
-    @property
-    def data(self):
-        return self._data
-
-    @property
-    def ui(self):
-        return [self.first, self.label, self.widget]
-
-    def activate(self):
-        btn = dict(enumerate([
-            pynput.mouse.Button.left,
-            pynput.mouse.Button.middle,
-            pynput.mouse.Button.right,
-        ]))[self.data['cbb2']]
-        self.editor.script.mouse_controller.click(
-            btn,
-            self.data['cbb1']+1
-        )
-
-class KeyboardTrigger:
-    def __init__(self, editor, data=None):
-        self.editor = editor
-        self._data = data or {
-            'class_name': self.__class__.__name__,
-            'cbb1': 0,
-            'le': []
-        }
-        self.init_ui()
-        self.first.data = self.data
-        self.first.activate = self.activate
-        self.pb_delete.clicked.connect(lambda: editor.remove_trigger(self))
-        self.pb_up.clicked.connect(lambda: editor.move_up_trigger(self))
-        self.pb_down.clicked.connect(lambda: editor.move_down_trigger(self))
-
-        self.cbb1.currentIndexChanged.connect(
-            lambda idx: self.change_data('cbb1', idx))
-        self.le.textChanged.connect(
-            lambda txt: self.change_data('le', self.le.PRESSED_KEY_VK))
-
-    def init_ui(self):
-        self.first = QtWidgets.QWidget()
-        self.hlayout1 = QtWidgets.QHBoxLayout(self.first)
-        self.pb_up = QtWidgets.QPushButton()
-        self.pb_up.setText('↑')
-        self.pb_delete = QtWidgets.QPushButton()
-        self.pb_delete.setText('X')
-        self.pb_down = QtWidgets.QPushButton()
-        self.pb_down.setText('↓')
-        self.hlayout1.addWidget(self.pb_up)
-        self.hlayout1.addWidget(self.pb_delete)
-        self.hlayout1.addWidget(self.pb_down)
-
-        self.label = QtWidgets.QLabel('鍵盤操作')
-        self.widget = QtWidgets.QWidget()
-        self.hlayout = QtWidgets.QHBoxLayout(self.widget)
-
-        self.cbb1 = QtWidgets.QComboBox(self.widget)
-        self.cbb1.addItem('點擊按鍵')
-        self.cbb1.addItem('點擊組合鍵')
-        self.cbb1.setCurrentIndex(self.data['cbb1'])
-
-        self.le = HotKeyEdit(single_mode=True)
-        self.le.PRESSED_KEY_VK = self.data['le']
-        self.space = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-
-        self.hlayout.addWidget(self.cbb1)
-        self.hlayout.addWidget(self.le)
-        self.hlayout.addItem(self.space)
-
-    def change_data(self, key, value):
-        self._data[key] = value
-
-    @property
-    def data(self):
-        return self._data
-
-    @property
-    def ui(self):
-        return [self.first, self.label, self.widget]
-
-    def activate(self):
-        for key in self.le._PRESSED_KEY:
-            self.editor.script.keyboard_controller.press(key)
-        for key in self.le._PRESSED_KEY:
-            self.editor.script.keyboard_controller.release(key)
-
 from .editor import Ui_ScriptEditor
 class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     def __init__(self, script, *args, **kwargs):
@@ -415,16 +231,17 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     def tab_text(self):
         return f'{"* " if self._unsave else ""}{self.path.stem}'
 
+    # 腳本內容存讀
     def change_data(self, section, key, value):
         self.data[section][key] = value
         self.unsave = self.data != self._data
         return True
     def read_data(self):
         if self.path.is_dir():
-            self.data = werdsazxc.Dict({})
+            self.data = Dict()
             return
         if not self.path.read_text():
-            self.data = werdsazxc.Dict({
+            self.data = Dict({
                 'BASIC': {
                     'activate': False,
                     'start_hotkey': [121],
@@ -443,7 +260,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
             self.data.dump_json(self.path)
             return
         # 讀取資料
-        self.data = werdsazxc.Dict.load_json(self.path)
+        self.data = Dict.load_json(self.path)
         self._data = copy.deepcopy(self.data)
         self.unsave = False
         # 調整畫面
@@ -464,6 +281,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
         self._data = copy.deepcopy(self.data)
         self.unsave = False
 
+    # 腳本設計
     def move_up_trigger(self, trigger):
         for row in range(self.tb_script.rowCount()):
             first = self.tb_script.cellWidget(row, 0)
@@ -473,7 +291,6 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
                 self.data.SCRIPT.content.insert(row-1, self.data.SCRIPT.content.pop(row))
                 break
         self.unsave = self.data != self._data
-
     def move_down_trigger(self, trigger):
         for row in range(self.tb_script.rowCount()):
             first = self.tb_script.cellWidget(row, 0)
@@ -483,7 +300,6 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
                 self.data.SCRIPT.content.insert(row+1, self.data.SCRIPT.content.pop(row))
                 break
         self.unsave = self.data != self._data
-
     def remove_trigger(self, trigger):
         for row in range(self.tb_script.rowCount()):
             first = self.tb_script.cellWidget(row, 0)
@@ -492,7 +308,6 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
                 self.data.SCRIPT.content.pop(row)
                 break
         self.unsave = self.data != self._data
-
     def add_trigger(self, row=None, data=None):
         row = row or self.tb_script.currentRow()
         row = 0 if row == -1 else row
