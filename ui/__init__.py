@@ -7,6 +7,7 @@ from trigger import KeyboardTrigger
 from trigger import MouseTrigger
 from ui.component import HotKeyEdit
 from utils.path import Dict
+from utils.vk import VK
 import pynput
 import copy
 
@@ -108,30 +109,14 @@ class Script:
             return
         # 啟動中，逐一檢查是否滿足快速鍵
         if self.editor.ccb_activate.currentIndex():
-            vk = getattr(key, 'vk', None)
-            if not vk:
-                vk = {
-                    'alt_l': 18, 'alt_r': 18,
-                    'shift_l': 16, 'shift_r': 16,
-                    'ctrl_l': 17, 'ctrl_r': 17,
-                }.get(key._name_)
-            if not vk:
-                vk = key._value_.vk
+            vk = VK.get_vk_from_key(key)
             self.pressing_key.add(vk)
             if not (set(self.editor.le_start_hotkey.PRESSED_KEY_VK) - self.pressing_key):
                 self.pressing_key.clear()
                 self.run_script()
     def on_release(self, key):
         '''釋放按鈕後從集合中移出'''
-        vk = getattr(key, 'vk', None)
-        if not vk:
-            vk = {
-                'alt_l': 18, 'alt_r': 18,
-                'shift_l': 16, 'shift_r': 16,
-                'ctrl_l': 17, 'ctrl_r': 17,
-            }.get(key._name_)
-        if not vk:
-            vk = key._value_.vk
+        vk = VK.get_vk_from_key(key)
         self.pressing_key.discard(vk)
 
     # 滑鼠偵測
