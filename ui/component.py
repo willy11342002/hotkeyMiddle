@@ -39,6 +39,13 @@ class HotKeyEdit(QtWidgets.QLineEdit):
     def get_vk(self, event):
         return event.nativeVirtualKey()
     # 按鍵綁定
+    def focusInEvent(self, event):
+        self._PRESSED_KEY.clear()
+        return super().focusInEvent(event)
+    def focusOutEvent(self, event):
+        dic_virtualkey = {v:k for k,v in self.DIC_VIRTUALKEY.items()}
+        self.PRESSED_KEY_VK = [dic_virtualkey[txt] for txt in self.text().split('+')]
+        return super().focusOutEvent(event)
     def keyPressEvent(self, event):
         if self.single_mode and self._PRESSED_KEY:
             return
@@ -47,10 +54,6 @@ class HotKeyEdit(QtWidgets.QLineEdit):
         self._PRESSED_KEY.add(pkey)
         self.setText('+'.join(self.PRESSED_KEY_STR))
     def keyReleaseEvent(self, event):
-        try:
-            vk = self.get_vk(event)
-            pkey = pynput.keyboard.KeyCode.from_vk(vk)
-            self._PRESSED_KEY.remove(pkey)
-        except KeyError as e:
-            pass
-
+        vk = self.get_vk(event)
+        pkey = pynput.keyboard.KeyCode.from_vk(vk)
+        self._PRESSED_KEY.discard(pkey)

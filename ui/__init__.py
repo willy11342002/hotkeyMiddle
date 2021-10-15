@@ -118,7 +118,6 @@ class Script:
             if not vk:
                 vk = key._value_.vk
             self.pressing_key.add(vk)
-            self.editor.le_start_hotkey.PRESSED_KEY_VK = self.editor.data.BASIC.start_hotkey
             if not (set(self.editor.le_start_hotkey.PRESSED_KEY_VK) - self.pressing_key):
                 self.pressing_key.clear()
                 self.run_script()
