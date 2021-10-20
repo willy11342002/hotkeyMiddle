@@ -4,7 +4,8 @@ from PyQt5 import QtGui
 
 from ui.components.fileexplorer import FileExplorer
 from ui.components.fileexplorer import FileLink
-from ui.components.hotkey_edit import HotKeyEdit
+from ui.components.edit import HotKeyEdit
+from ui.components.edit import FileEdit
 from ui.components.editor import EditorTabWidget
 from ui.components.editor import Editor
 
@@ -95,8 +96,8 @@ class Script:
         self.editor.pb_click_keyboard.setEnabled(not bool(idx))
         self.editor.tb_script.setEnabled(not bool(idx))
         self.editor.te_record.setEnabled(not bool(idx))
-        self.editor.pb_screencheck.setEnabled(not bool(idx))
-        self.editor.pb_screenshot.setEnabled(not bool(idx))
+        self.editor.pb_screen_check.setEnabled(not bool(idx))
+        self.editor.pb_screen_shot.setEnabled(not bool(idx))
 
     # 關閉腳本(關閉頁簽)
     def close_editor(self):
@@ -105,9 +106,10 @@ class Script:
         self.is_open = False
 
     def run_script(self):
+        kwargs = Dict()
         for row in range(self.editor.tb_script.rowCount()):
             first = self.editor.tb_script.cellWidget(row, 0)
-            first.activate()
+            kwargs[row] = first.activate(**kwargs)
 
     # 鍵盤偵測
     def on_press(self, key):
@@ -140,7 +142,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.setupUi(self)
-        self.show()
+        self.showMaximized()
 
         self.dic_scripts = Dict()
 

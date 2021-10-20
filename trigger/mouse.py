@@ -16,7 +16,7 @@ class MouseTrigger(BaseTrigger):
         self.init_ui()
         self.bind_function()
 
-    def activate(self):
+    def activate(self, **kwargs):
         btn = dict(enumerate([
             pynput.mouse.Button.left,
             pynput.mouse.Button.middle,
