@@ -1,6 +1,11 @@
 from .base import BaseTrigger
+from itertools import zip_longest
 from utils.path import Dict
 from PIL import ImageGrab
+import pyautogui
+import win32api
+import win32gui
+import win32con
 
 
 class ImgCheckTrigger(BaseTrigger):
@@ -20,8 +25,30 @@ class ImgCheckTrigger(BaseTrigger):
         self.init_ui()
         self.bind_function()
 
+    def get_monitors(self):
+        return win32api.GetSystemMetrics(win32con.SM_CMONITORS)
+
+    def get_top_left(self):
+        n = self.get_monitors()
+        _x, _y = pyautogui.position()
+        pyautogui.moveTo(-n * pyautogui.size()[0], -n * pyautogui.size()[1])
+        x, y = pyautogui.position()
+        pyautogui.moveTo(_x, _y)
+        return x, y
+
     def activate(self, **kwargs):
-        screenshotIm = ImageGrab.grab(all_screens=1)
+        source = kwargs[self.le1.text()]
+        target = kwargs[self.le3.text()]
+        top_left = self.get_top_left()
+
+        location = tuple(pyautogui.locate(target, source))
+        location = [
+            (base + shift) if shift else base
+            for base, shift in zip_longest(location, top_left)
+        ]
+        location = pyautogui.center(location)
+        return location
+
 
 class ScreenShotTrigger(BaseTrigger):
     label_text = '螢幕截圖'

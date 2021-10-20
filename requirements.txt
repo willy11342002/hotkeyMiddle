@@ -4,3 +4,4 @@ PyYAML==5.1.2
 pygubu==0.15
 pygubu-designer==0.20
 PyQt5==5.15.1
+filetype==1.0.8
