@@ -92,11 +92,13 @@ class Script:
         self.editor.le_stop_hotkey.setEnabled(
             not bool(idx) and self.editor.rb_while.isChecked())
         self.editor.te_descript.setEnabled(not bool(idx))
+        self.editor.pb_file_load.setEnabled(not bool(idx))
+        self.editor.pb_file_save.setEnabled(not bool(idx))
         self.editor.pb_click_mouse.setEnabled(not bool(idx))
         self.editor.pb_click_keyboard.setEnabled(not bool(idx))
         self.editor.tb_script.setEnabled(not bool(idx))
         self.editor.te_record.setEnabled(not bool(idx))
-        self.editor.pb_screen_check.setEnabled(not bool(idx))
+        self.editor.pb_img_check.setEnabled(not bool(idx))
         self.editor.pb_screen_shot.setEnabled(not bool(idx))
 
     # 關閉腳本(關閉頁簽)
@@ -109,7 +111,7 @@ class Script:
         kwargs = Dict()
         for row in range(self.editor.tb_script.rowCount()):
             first = self.editor.tb_script.cellWidget(row, 0)
-            kwargs[row] = first.activate(**kwargs)
+            kwargs[str(row)] = first.activate(**kwargs)
 
     # 鍵盤偵測
     def on_press(self, key):

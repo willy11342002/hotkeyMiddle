@@ -32,7 +32,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <property name="geometry">
@@ -288,7 +288,7 @@
        <string>腳本內容</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QTableWidget" name="tb_script">
          <property name="font">
           <font>
@@ -303,7 +303,7 @@
           <bool>true</bool>
          </attribute>
          <attribute name="verticalHeaderVisible">
-          <bool>false</bool>
+          <bool>true</bool>
          </attribute>
          <attribute name="verticalHeaderMinimumSectionSize">
           <number>45</number>
@@ -328,7 +328,7 @@
          </column>
         </widget>
        </item>
-       <item row="0" column="0">
+       <item row="1" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QPushButton" name="pb_click_mouse">
@@ -364,7 +364,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pb_screenshot">
+          <widget class="QPushButton" name="pb_screen_shot">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -377,7 +377,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pb_screencheck">
+          <widget class="QPushButton" name="pb_img_check">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -385,12 +385,50 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>畫面檢查</string>
+            <string>圖像辨識</string>
            </property>
           </widget>
          </item>
          <item>
           <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="pb_file_load">
+           <property name="text">
+            <string>讀取檔案</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pb_file_save">
+           <property name="text">
+            <string>儲存檔案</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -449,5 +487,105 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pb_file_load</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>ScriptEditor</receiver>
+   <slot>add_trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>79</x>
+     <y>-18</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_file_save</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>ScriptEditor</receiver>
+   <slot>add_trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>177</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>170</x>
+     <y>-19</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_click_mouse</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>ScriptEditor</receiver>
+   <slot>add_trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>88</x>
+     <y>166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_click_keyboard</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>ScriptEditor</receiver>
+   <slot>add_trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>144</x>
+     <y>167</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_screen_shot</sender>
+   <signal>clicked()</signal>
+   <receiver>ScriptEditor</receiver>
+   <slot>add_trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>295</x>
+     <y>173</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>6</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_img_check</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>ScriptEditor</receiver>
+   <slot>add_trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>379</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>237</x>
+     <y>-14</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>add_trigger()</slot>
+ </slots>
 </ui>

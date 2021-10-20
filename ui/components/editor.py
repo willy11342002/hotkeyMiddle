@@ -1,13 +1,23 @@
 from PyQt5 import QtWidgets
 from ..editor import Ui_ScriptEditor
+from trigger import ImgCheckTrigger
 from trigger import ScreenShotTrigger
+from trigger import FileLoadTrigger
+from trigger import FileSaveTrigger
 from trigger import KeyboardTrigger
 from trigger import MouseTrigger
 from utils.path import Dict
 import copy
 
-
 class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
+    DIC_TRIGGER = Dict({
+        'pb_click_mouse': MouseTrigger,
+        'pb_click_keyboard': KeyboardTrigger,
+        'pb_file_load': FileLoadTrigger,
+        'pb_file_save': FileSaveTrigger,
+        'pb_img_check': ImgCheckTrigger,
+        'pb_screen_shot': ScreenShotTrigger,
+    })
     def __init__(self, script, *args, **kwargs):
         super().__init__()
         self.script = script
@@ -30,15 +40,6 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
             lambda: self.change_data('BASIC', 'descript', self.te_descript.toPlainText()))
         self.te_record.textChanged.connect(
             lambda: self.change_data('RECORD', 'content', self.te_record.toPlainText()))
-
-        self.pb_click_mouse.clicked.connect(
-            lambda: self.add_trigger())
-        self.pb_click_keyboard.clicked.connect(
-            lambda: self.add_trigger())
-        self.pb_screenshot.clicked.connect(
-            lambda: self.add_trigger())
-        self.pb_screencheck.clicked.connect(
-            lambda: self.add_trigger())
 
     @property
     def path(self):
@@ -139,6 +140,10 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
                 self.data.SCRIPT.content.pop(row)
                 break
         self.unsave = self.data != self._data
+    def sort_trigger(self):
+        for row in range(self.tb_script.rowCount()):
+            item = self.tb_script.verticalHeaderItem(row)
+            item.setText(str(row))
     def add_trigger(self, row=None, data=None):
         row = row or self.tb_script.currentRow()
         row = 0 if row == -1 else row
@@ -149,23 +154,21 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
             first, label, widget = trigger.ui
         else:
             pb = self.sender()
-            if pb == self.pb_click_mouse:
-                trigger = MouseTrigger(self, data)
-                first, label, widget = trigger.ui
-            elif pb == self.pb_click_keyboard:
-                trigger = KeyboardTrigger(self, data)
-                first, label, widget = trigger.ui
-            elif pb == self.pb_screenshot:
-                trigger = ScreenShotTrigger(self, data)
-                first, label, widget = trigger.ui
+            Trigger = self.DIC_TRIGGER[pb.objectName()]
+            trigger = Trigger(self, data)
+            first, label, widget = trigger.ui
             self.data.SCRIPT.content.insert(row, data)
             self.unsave = self.data != self._data
 
         self.tb_script.insertRow(row)
+        item = QtWidgets.QTableWidgetItem(str(row))
+        self.tb_script.setVerticalHeaderItem(row, item)
         self.tb_script.setCellWidget(row, 0, first)
         self.tb_script.setCellWidget(row, 1, label)
         self.tb_script.setCellWidget(row, 2, widget)
         self.tb_script.verticalHeader().resizeSection(row, 50)
+
+        self.sort_trigger()
 
 
 class EditorTabWidget(QtWidgets.QTabWidget):

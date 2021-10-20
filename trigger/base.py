@@ -1,6 +1,8 @@
-from ui.components.hotkey_edit import HotKeyEdit
+from ui.components.edit import HotKeyEdit
+from ui.components.edit import FileEdit
 from PyQt5 import QtWidgets
 from utils.path import Dict
+from pathlib import Path
 
 
 class BaseTrigger:
@@ -39,18 +41,25 @@ class BaseTrigger:
         # 生成參數
         self.hlayout = QtWidgets.QHBoxLayout(self.widget)
         for key, value in self.DIC_ARGS.items():
+            if value.class_name == 'QLabel':
+                obj = QtWidgets.QLabel()
+                obj.setText(self.data.get(key, ''))
             if value.class_name == 'QLineEdit':
-                obj = QtWidgets.QLineEdit(self.widget)
+                obj = QtWidgets.QLineEdit()
                 obj.setPlaceholderText(value.placeholder)
                 obj.setText(self.data[key])
                 obj.textChanged.connect(
                     lambda txt, key=key, obj=obj: self.change_data(key, obj.text()))
             if value.class_name == 'QComboBox':
-                obj = QtWidgets.QComboBox(self.widget)
+                obj = QtWidgets.QComboBox()
                 obj.addItems(value.choices)
                 obj.setCurrentIndex(self.data[key])
                 obj.currentIndexChanged.connect(
                     lambda idx, key=key, obj=obj: self.change_data(key, obj.currentIndex()))
+            if value.class_name == 'FileEdit':
+                obj = FileEdit(path=Path(self.data.get(key, 'data')) ,method=value.method, types=value.types)
+                obj.textChanged.connect(
+                    lambda txt, key=key, obj=obj: self.change_data(key, obj.text()))
             if value.class_name == 'HotKeyEdit':
                 obj = HotKeyEdit(single_mode=True)
                 obj.PRESSED_KEY_VK = self.data[key]

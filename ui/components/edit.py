@@ -1,7 +1,34 @@
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
+from pathlib import Path
 from utils.vk import VK
 import pynput
+
+
+class FileEdit(QtWidgets.QPushButton):
+    textChanged = QtCore.pyqtSignal(str)
+    def __init__(self, path=None, method=None, types=None):
+        super().__init__()
+        self.path = path or Path('data')
+        self.method = method or 'getOpenFileName'
+        self.types = types or 'All files(*)'
+        self.clicked.connect(self.choose_path)
+
+    @property
+    def path(self):
+        return self._path
+    @path.setter
+    def path(self, p):
+        self._path = p
+        self.setText(str(p.absolute()))
+        self.textChanged.emit(str(p.absolute()))
+
+    def choose_path(self):
+        filename, ok = getattr(QtWidgets.QFileDialog, self.method)(
+            self, '選擇檢查檔', str(self.path.parent), self.types)
+        if not ok:
+            return
+        self.path = Path(filename)
 
 
 class HotKeyEdit(QtWidgets.QLineEdit):
