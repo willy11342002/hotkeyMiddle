@@ -14,6 +14,8 @@ class KeyboardTrigger(BaseTrigger):
         self._data = data or self.DEFAULT_DATA
         self.init_ui()
         self.bind_function()
+        self.cbb1.currentIndexChanged.connect(
+            lambda idx: setattr(self.le, 'single_mode', not bool(idx)))
 
     def activate(self):
         for key in self.le._PRESSED_KEY:
