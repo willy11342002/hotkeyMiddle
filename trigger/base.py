@@ -47,13 +47,13 @@ class BaseTrigger:
             if value.class_name == 'QLineEdit':
                 obj = QtWidgets.QLineEdit()
                 obj.setPlaceholderText(value.placeholder)
-                obj.setText(self.data[key])
+                obj.setText(self.data.get(key, ''))
                 obj.textChanged.connect(
                     lambda txt, key=key, obj=obj: self.change_data(key, obj.text()))
             if value.class_name == 'QComboBox':
                 obj = QtWidgets.QComboBox()
                 obj.addItems(value.choices)
-                obj.setCurrentIndex(self.data[key])
+                obj.setCurrentIndex(self.data.get(key, 0))
                 obj.currentIndexChanged.connect(
                     lambda idx, key=key, obj=obj: self.change_data(key, obj.currentIndex()))
             if value.class_name == 'FileEdit':

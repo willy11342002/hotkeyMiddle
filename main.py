@@ -205,6 +205,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         script = Script(self, path)
         script.tree.setIcon(0, self.tree_scripts.icon_dir_close)
         self.tree_scripts.addTopLevelItem(script.tree)
+        script.tree.setExpanded(True)
 
         self.dic_scripts[id(script)] = script
 

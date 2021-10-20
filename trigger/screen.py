@@ -37,17 +37,21 @@ class ImgCheckTrigger(BaseTrigger):
         return x, y
 
     def activate(self, **kwargs):
-        source = kwargs[self.le1.text()]
-        target = kwargs[self.le3.text()]
-        top_left = self.get_top_left()
+        try:
+            source = kwargs[self.le1.text()]
+            target = kwargs[self.le3.text()]
+            top_left = self.get_top_left()
 
-        location = tuple(pyautogui.locate(target, source))
-        location = [
-            (base + shift) if shift else base
-            for base, shift in zip_longest(location, top_left)
-        ]
-        location = pyautogui.center(location)
-        return location
+            location = tuple(pyautogui.locate(target, source))
+            location = [
+                (base + shift) if shift else base
+                for base, shift in zip_longest(location, top_left)
+            ]
+            location = pyautogui.center(location)
+            print(location)
+            return location
+        except:
+            return None
 
 
 class ScreenShotTrigger(BaseTrigger):
