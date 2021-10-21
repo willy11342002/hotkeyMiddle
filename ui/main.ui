@@ -28,83 +28,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QGroupBox" name="file_explorer">
-        <property name="title">
-         <string>檔案總管</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="FileExplorer" name="tree_scripts">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>300</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::EditKeyPressed</set>
-             </property>
-             <property name="sortingEnabled">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerDefaultSectionSize">
-              <number>200</number>
-             </attribute>
-             <attribute name="headerShowSortIndicator" stdset="0">
-              <bool>true</bool>
-             </attribute>
-             <attribute name="headerStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>名稱</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="EditorTabWidget" name="main_script">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="tabsClosable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="EditorTabWidget" name="main_script"/>
     </item>
    </layout>
   </widget>
@@ -122,6 +46,7 @@
      <string>檢視</string>
     </property>
     <addaction name="action_file_explorer"/>
+    <addaction name="action_script_explorer"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
@@ -146,6 +71,242 @@
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="file_explorer">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>檔案總管</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="FileExplorer" name="tree_files">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>300</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::EditKeyPressed</set>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerDefaultSectionSize">
+        <number>200</number>
+       </attribute>
+       <attribute name="headerShowSortIndicator" stdset="0">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="headerStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>名稱</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="script_explorer">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>腳本庫</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QTreeWidget" name="tree_scripts">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text">
+         <string>名稱</string>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>變數</string>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>文字</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">StringVariableTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>整數</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">IntergerVariableTrigger</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>檔案</string>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>存檔</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">FileSaveTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>讀檔</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">FileLoadTrigger</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>滑鼠</string>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>點擊滑鼠</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">MouseClickTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>滾動滑鼠</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">MouseScrollTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>移動滑鼠</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">MouseMoveTrigger</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>鍵盤</string>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>點擊按鈕</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">KeyboardClickTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>按下快速鍵</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">HotkeyClickTrigger</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>圖像</string>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>螢幕截圖</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">PrintScreenTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>圖像辨識</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">ScreenCheckTrigger</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>剪貼簿</string>
+        </property>
+        <property name="flags">
+         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+        </property>
+        <item>
+         <property name="text">
+          <string>複製</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">CopyTrigger</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>貼上</string>
+         </property>
+         <property name="whatsThis">
+          <string notr="true">PasteTrigger</string>
+         </property>
+        </item>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="action_new_script">
    <property name="text">
     <string>新建腳本</string>
@@ -232,6 +393,14 @@
    </property>
    <property name="shortcut">
     <string>F8</string>
+   </property>
+  </action>
+  <action name="action_script_explorer">
+   <property name="text">
+    <string>腳本庫</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
    </property>
   </action>
  </widget>
