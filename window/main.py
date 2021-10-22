@@ -37,7 +37,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tree_scripts.doubleClicked.connect(
             lambda: self.tree_scripts.currentItem().parent() and
                     self.main_script.currentWidget() and 
-                    self.main_script.currentWidget().add_trigger())
+                    self.main_script.currentWidget().add_trigger(
+                        class_name=self.tree_scripts.currentItem().whatsThis(0)
+                    ))
 
         self.load_list()
 

@@ -5,14 +5,40 @@ from utils.vk import VK
 import pynput
 
 
+class ComboBox(QtWidgets.QComboBox):
+    @classmethod
+    def from_value(cls, value):
+        obj = cls()
+        obj.addItems(value.choices)
+        obj.setCurrentIndex(value.default)
+        return obj
+    @property
+    def current(self):
+        return self.currentIndex()
+    @current.setter
+    def current(self, idx):
+        self.setCurrentIndex(idx)
+
+
 class FileEdit(QtWidgets.QPushButton):
     textChanged = QtCore.pyqtSignal(str)
-    def __init__(self, path=None, method=None, types=None):
+    def __init__(self):
         super().__init__()
-        self.path = path or Path('data')
-        self.method = method or 'getOpenFileName'
-        self.types = types or 'All files(*)'
         self.clicked.connect(self.choose_path)
+
+    @classmethod
+    def from_value(cls, value):
+        obj = cls()
+        obj.path = Path(value.default)
+        obj.method = value.method
+        obj.types = value.types
+        return obj
+    @property
+    def current(self):
+        return str(self.path.absolute())
+    @current.setter
+    def current(self, path):
+        self.path = Path(path)
 
     @property
     def path(self):
@@ -67,3 +93,16 @@ class HotKeyEdit(QtWidgets.QLineEdit):
         vk = VK.get_vk_from_key(event)
         pkey = pynput.keyboard.KeyCode.from_vk(vk)
         self._PRESSED_KEY.discard(pkey)
+
+    @classmethod
+    def from_value(cls, value):
+        obj = cls()
+        obj.single_mode = value.single_mode
+        obj.PRESSED_KEY_VK = value.default
+        return obj
+    @property
+    def current(self):
+        return self.PRESSED_KEY_VK
+    @current.setter
+    def current(self, PRESSED_KEY_VK):
+        self.PRESSED_KEY_VK = PRESSED_KEY_VK

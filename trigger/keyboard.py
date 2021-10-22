@@ -1,24 +1,42 @@
-from .base import BaseTrigger
 from utils.path import Dict
+from .base import BaseTrigger
+import pynput
 
 
-class KeyboardTrigger(BaseTrigger):
-    label_text = '鍵盤操作'
-    DIC_ARGS = Dict({
-        'cbb1': {'class_name': 'QComboBox', 'choices': ['點擊按鍵', '點擊組合鍵'], 'default': 0},
-        'le': {'class_name': 'HotKeyEdit', 'default': []}
+class KeyboardClickTrigger(BaseTrigger):
+    controller = pynput.keyboard.Controller()
+    TITLE = '單擊鍵盤'
+    INFORMATION = (
+        '來源(str)： 無\n\n'
+        '點擊設定的按鍵'
+    )
+    DIC_DEFAULT = Dict({
+        **BaseTrigger.DIC_DEFAULT,
+        'other': {
+            'keys': {'class_name': 'HotKeyEdit', 'name': '按鍵設定', 'single_mode': True, 'default': []},
+        }
     })
-    def __init__(self, editor, data=None):
-        super().__init__()
-        self.editor = editor
-        self._data = data or self.DEFAULT_DATA
-        self.init_ui()
-        self.bind_function()
-        self.cbb1.currentIndexChanged.connect(
-            lambda idx: setattr(self.le, 'single_mode', not bool(idx)))
 
-    def activate(self, **kwargs):
-        for key in self.le._PRESSED_KEY:
-            self.editor.script.keyboard_controller.press(key)
-        for key in self.le._PRESSED_KEY:
-            self.editor.script.keyboard_controller.release(key)
+    def activate(self, *args, **kwargs):
+        for key in self.keys.PRESSED_KEY:
+            self.controller.click(key)
+
+
+class HotkeyClickTrigger(BaseTrigger):
+    TITLE = '鍵盤快速鍵'
+    INFORMATION = (
+        '來源(str)： 無\n\n'
+        '點擊所設定的快速鍵'
+    )
+    DIC_DEFAULT = Dict({
+        **BaseTrigger.DIC_DEFAULT,
+        'other': {
+            'keys': {'class_name': 'HotKeyEdit', 'name': '按鍵設定', 'single_mode': False, 'default': []},
+        }
+    })
+
+    def activate(self, *args, **kwargs):
+        for key in self.keys.PRESSED_KEY:
+            self.controller.press(key)
+        for key in self.keys.PRESSED_KEY:
+            self.controller.release(key)

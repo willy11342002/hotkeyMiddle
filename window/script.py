@@ -8,9 +8,6 @@ import pynput
 
 
 class PynputListener:
-    mouse_controller = pynput.mouse.Controller()
-    keyboard_controller = pynput.keyboard.Controller()
-
     def __init__(self):
         # 偵測快速鍵
         self.pressing_key = set()

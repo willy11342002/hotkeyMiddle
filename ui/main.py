@@ -29,6 +29,7 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.main_script = EditorTabWidget(self.centralwidget)
+        self.main_script.setTabsClosable(True)
         self.main_script.setObjectName("main_script")
         self.verticalLayout.addWidget(self.main_script)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -52,7 +53,7 @@ class Ui_MainWindow(object):
         self.dockWidgetContents.setObjectName("dockWidgetContents")
         self.gridLayout = QtWidgets.QGridLayout(self.dockWidgetContents)
         self.gridLayout.setObjectName("gridLayout")
-        self.tree_files = FileExplorer(self.dockWidgetContents)
+        self.tree_files = QtWidgets.QTreeWidget(self.dockWidgetContents)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -221,4 +222,4 @@ class Ui_MainWindow(object):
         self.action_stop_all.setShortcut(_translate("MainWindow", "F8"))
         self.action_script_explorer.setText(_translate("MainWindow", "腳本庫"))
         self.action_script_explorer.setShortcut(_translate("MainWindow", "Ctrl+Shift+P"))
-from ui import EditorTabWidget, FileExplorer
+from window.editor import EditorTabWidget

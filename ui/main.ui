@@ -28,7 +28,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="EditorTabWidget" name="main_script"/>
+     <widget class="EditorTabWidget" name="main_script">
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -84,7 +88,7 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="FileExplorer" name="tree_files">
+      <widget class="QTreeWidget" name="tree_files">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -406,14 +410,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FileExplorer</class>
-   <extends>QTreeWidget</extends>
-   <header>ui</header>
-  </customwidget>
-  <customwidget>
    <class>EditorTabWidget</class>
    <extends>QTabWidget</extends>
-   <header>ui</header>
+   <header>window.editor</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,90 +1,101 @@
-from ui.components.edit import HotKeyEdit
-from ui.components.edit import FileEdit
 from PyQt5 import QtWidgets
+from ui.trigger import Ui_Form
 from utils.path import Dict
-from pathlib import Path
+import components
 
 
 class BaseTrigger:
-    label_text = ''
-    def __init__(self):
-        self._data = Dict()
+    TITLE = ''
+    INFORMATION = ''
+    DIC_DEFAULT = Dict({
+        'rb_source_fixed': True,
+        'rb_source_variable': False,
+        'le_source_fixed': '',
+        'le_source_variable': '',
+        'other': {},
+    })
+    _row = 0
+    class Trigger(QtWidgets.QWidget, Ui_Form):
+        def __init__(self, manager, data, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.setupUi(self)
+            self.manager = manager
+            self.lbl_title.setText(manager.TITLE)
+            self.lbl_information.setText(manager.INFORMATION)
+            for i, (key, value) in enumerate(data.other.items()):
+                name_widget = QtWidgets.QLabel(f'{value.name}：')
+                value_widget = getattr(components, value.class_name).from_value(value)
+                self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.LabelRole, name_widget)
+                self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.FieldRole, value_widget)
+                setattr(self, key, value_widget)
 
-        # 生成畫面元素
-        self.first = QtWidgets.QWidget()
-        self.label = QtWidgets.QLabel()
-        self.widget = QtWidgets.QWidget()
+        @property
+        def row(self):
+            return self.manager.row
+        @row.setter
+        def row(self, row):
+            self.manager.row = row
 
-        # 生成操作按鈕
-        self.hlayout1 = QtWidgets.QHBoxLayout(self.first)
-        self.pb_up = QtWidgets.QPushButton()
-        self.pb_up.setText('↑')
-        self.pb_delete = QtWidgets.QPushButton()
-        self.pb_delete.setText('X')
-        self.pb_down = QtWidgets.QPushButton()
-        self.pb_down.setText('↓')
-        self.hlayout1.addWidget(self.pb_up)
-        self.hlayout1.addWidget(self.pb_delete)
-        self.hlayout1.addWidget(self.pb_down)
-
-        # 觸發指令文字設定
-        self.label.setText(self.label_text)
-
-    def bind_function(self):
-        self.first.data = self.data
-        self.first.activate = self.activate
-        self.pb_delete.clicked.connect(lambda: self.editor.remove_trigger(self))
-        self.pb_up.clicked.connect(lambda: self.editor.move_up_trigger(self))
-        self.pb_down.clicked.connect(lambda: self.editor.move_down_trigger(self))
-
-    def init_ui(self):
-        # 生成參數
-        self.hlayout = QtWidgets.QHBoxLayout(self.widget)
-        for key, value in self.DIC_ARGS.items():
-            if value.class_name == 'QLabel':
-                obj = QtWidgets.QLabel()
-                obj.setText(self.data.get(key, ''))
-            if value.class_name == 'QLineEdit':
-                obj = QtWidgets.QLineEdit()
-                obj.setPlaceholderText(value.placeholder)
-                obj.setText(self.data.get(key, ''))
-                obj.textChanged.connect(
-                    lambda txt, key=key, obj=obj: self.change_data(key, obj.text()))
-            if value.class_name == 'QComboBox':
-                obj = QtWidgets.QComboBox()
-                obj.addItems(value.choices)
-                obj.setCurrentIndex(self.data.get(key, 0))
-                obj.currentIndexChanged.connect(
-                    lambda idx, key=key, obj=obj: self.change_data(key, obj.currentIndex()))
-            if value.class_name == 'FileEdit':
-                obj = FileEdit(path=Path(self.data.get(key, 'data')) ,method=value.method, types=value.types)
-                obj.textChanged.connect(
-                    lambda txt, key=key, obj=obj: self.change_data(key, obj.text()))
-            if value.class_name == 'HotKeyEdit':
-                obj = HotKeyEdit(single_mode=True)
-                obj.PRESSED_KEY_VK = self.data[key]
-                obj.textChanged.connect(
-                    lambda txt, key=key, obj=obj: self.change_data(key, obj.PRESSED_KEY_VK))
-            setattr(self, key, obj)
-            self.hlayout.addWidget(obj)
-
-        self.space = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.hlayout.addItem(self.space)
-
-    def change_data(self, key, value):
-        self._data[key] = value
+        @property
+        def data(self):
+            return self.manager.data
 
     @property
-    def DEFAULT_DATA(self):
-        return Dict({
-            'class_name': self.__class__.__name__,
-            **{k: v.default for k, v in self.DIC_ARGS.items()}
-        })
+    def row(self):
+        return self._row
+    @row.setter
+    def row(self, row):
+        self._row = row
+        self.right.lbl_index.setText(str(row))
 
     @property
     def data(self):
-        return self._data
+        return Dict({
+            'rb_source_fixed': self.right.rb_source_fixed.isChecked(),
+            'rb_source_variable': self.right.rb_source_variable.isChecked(),
+            'le_source_fixed': self.right.le_source_fixed.text(),
+            'le_source_variable': self.right.le_source_variable.text(),
+            'other': {
+                key: {
+                    k: v if k != 'default' else getattr(self.right, key).current
+                    for k, v in value.items()
+                }
+                for key, value in self.DIC_DEFAULT.other.items()
+            }
+        })
+    @data.setter
+    def data(self, data):
+        self.right.rb_source_fixed.setChecked(data.rb_source_fixed)
+        self.right.rb_source_variable.setChecked(data.rb_source_variable)
+        self.right.le_source_fixed.setText(data.le_source_fixed)
+        self.right.le_source_variable.setText(data.le_source_variable)
+        for key, value in data.other.items():
+            value_widget = getattr(self.right, key)
+            value_widget.current = value.default
 
-    @property
-    def ui(self):
-        return [self.first, self.label, self.widget]
+    def __init__(self, editor, data=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.editor = editor
+        # 腳本清單
+        self.header_item = QtWidgets.QTableWidgetItem()
+        self.handle_item = QtWidgets.QWidget()
+        self.name_item = QtWidgets.QTableWidgetItem(self.TITLE)
+        # 腳本清單-操作
+        h = QtWidgets.QHBoxLayout(self.handle_item)
+        self.pb_remove = QtWidgets.QPushButton('X')
+        self.pb_move_up = QtWidgets.QPushButton('↑')
+        self.pb_move_down = QtWidgets.QPushButton('↓')
+        self.pb_remove.clicked.connect(lambda: self.editor.remove_trigger(self))
+        self.pb_move_up.clicked.connect(lambda: self.editor.move_up_trigger(self))
+        self.pb_move_down.clicked.connect(lambda: self.editor.move_down_trigger(self))
+        h.addWidget(self.pb_remove)
+        h.addWidget(self.pb_move_up)
+        h.addWidget(self.pb_move_down)
+
+        # 腳本詳細內容
+        data = data or self.DIC_DEFAULT
+        self.right = self.Trigger(self, data)
+        self.data = data
+
+    def activate(self, *args, **kwargs):
+        pass

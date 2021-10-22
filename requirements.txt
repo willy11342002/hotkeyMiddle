@@ -1,6 +1,6 @@
 pynput==1.6.8
 py2exe==0.10.3.0
-PyYAML==5.1.2
+PyYAML==5.4.1
 pygubu==0.15
 pygubu-designer==0.20
 PyQt5==5.15.1

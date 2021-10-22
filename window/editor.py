@@ -1,11 +1,21 @@
 from pathlib import Path
 from PyQt5 import QtWidgets
+from PyQt5 import QtCore
 
-from ui.editor import Ui_ScriptEditor
 from utils.path import Dict
 import trigger
 
 
+class TriggerListWidget(QtWidgets.QTableWidget):
+    sig_drop_new = QtCore.pyqtSignal(str)
+    def dropEvent(self, event):
+        if event.source().objectName() == 'tree_scripts':
+            class_name = event.source().currentItem().whatsThis(0)
+            self.sig_drop_new.emit(class_name)
+
+
+
+from ui.editor import Ui_ScriptEditor
 class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     _data = Dict({
         'BASIC': {
@@ -25,7 +35,12 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
         self.script = script
         self.path = path
         self.read_data()
-        
+        self.lst_trigger.currentItemChanged.connect(
+            lambda item: self.lst_page.setCurrentIndex(
+                self.lst_trigger.currentRow()
+            ))
+        self.lst_trigger.sig_drop_new.connect(
+            lambda class_name: self.add_trigger(class_name=class_name))
 
     @property
     def data(self) -> Dict:
@@ -89,16 +104,63 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
         self.data.dump_json(path)
 
     # 腳本設計
-    def move_up_trigger(self, trigger):
-        pass
-    def move_down_trigger(self, trigger):
-        pass
-    def remove_trigger(self, trigger):
-        pass
-    def sort_trigger(self):
-        pass
-    def add_trigger(self, row=None, data=None):
-        pass
+    def move_up_trigger(self, manager):
+        self.lst_page.removeWidget(manager.right)
+        self.lst_trigger.removeRow(manager.row)
+        self.add_trigger(
+            class_name=manager.__class__.__name__,
+            row=manager.row-1,
+            data=manager.data
+        )
+    def move_down_trigger(self, manager):
+        self.lst_page.removeWidget(manager.right)
+        self.lst_trigger.removeRow(manager.row)
+        self.add_trigger(
+            class_name=manager.__class__.__name__,
+            row=manager.row+1,
+            data=manager.data
+        )
+    def remove_trigger(self, manager):
+        self.lst_trigger.removeRow(manager.row)
+        self.lst_page.removeWidget(manager.right)
+        self.reset_index()
+    def add_trigger(self, class_name, row=None, data=None):
+        Manager = getattr(trigger, class_name, None)
+        if not Manager:
+            return
+        row = row or self.lst_trigger.currentRow()
+        row = 0 if row == -1 else row
+
+        # 實體化
+        manager = Manager(self, data)
+        # 清單內容設定
+        self.lst_trigger.insertRow(row)
+        self.lst_trigger.setVerticalHeaderItem(row, manager.header_item)
+        self.lst_trigger.setCellWidget(row, 0, manager.handle_item)
+        self.lst_trigger.setItem(row, 1, manager.name_item)
+        # 調整高度
+        self.lst_trigger.verticalHeader().resizeSection(row, 50)
+        # 右側加入
+        self.lst_page.insertWidget(row, manager.right)
+        # 重新排序
+        self.reset_index()
+
+    # 重新排序腳本清單編號、設定清單按鈕是否啟用
+    def reset_index(self):
+        for row in range(self.lst_trigger.rowCount()):
+            header_item = self.lst_trigger.verticalHeaderItem(row)
+            header_item.setText(str(row))
+
+            manager = self.lst_page.widget(row).manager
+            manager.row = row
+            manager.pb_move_up.setDisabled(False)
+            manager.pb_move_down.setDisabled(False)
+
+            if row == 0:
+                manager.pb_move_up.setDisabled(True)
+
+            if row+1 == self.lst_trigger.rowCount():
+                manager.pb_move_down.setDisabled(True)
 
 
 class EditorTabWidget(QtWidgets.QTabWidget):

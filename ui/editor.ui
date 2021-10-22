@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>686</width>
-    <height>543</height>
+    <width>758</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="font">
@@ -24,30 +24,79 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QToolBox" name="toolBox">
-     <property name="font">
-      <font>
-       <family>微軟正黑體</family>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
+    <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
-     <widget class="QWidget" name="page">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>664</width>
-        <height>401</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>基本資料</string>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>基本設定</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="font">
+          <font>
+           <family>微軟正黑體</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="title">
+          <string>類型</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QRadioButton" name="rb_once">
+            <property name="font">
+             <font>
+              <family>微軟正黑體</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>運行一次</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="rb_while">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="font">
+             <font>
+              <family>微軟正黑體</family>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>運行直到停止</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
         <layout class="QFormLayout" name="formLayout_2">
          <item row="0" column="0">
           <widget class="QLabel" name="label">
@@ -172,77 +221,7 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="font">
-          <font>
-           <family>微軟正黑體</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="title">
-          <string>類型</string>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QRadioButton" name="rb_once">
-            <property name="font">
-             <font>
-              <family>微軟正黑體</family>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>運行一次</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="rb_while">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="font">
-             <font>
-              <family>微軟正黑體</family>
-              <pointsize>12</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>運行直到停止</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
+       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="font">
           <font>
@@ -275,41 +254,36 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page_2">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>664</width>
-        <height>401</height>
-       </rect>
-      </property>
-      <attribute name="label">
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
        <string>腳本內容</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="2" column="0">
-        <widget class="QTableWidget" name="tb_script">
-         <property name="font">
-          <font>
-           <family>微軟正黑體</family>
-           <pointsize>12</pointsize>
-          </font>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="TriggerListWidget" name="lst_trigger">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="dragEnabled">
+          <bool>true</bool>
          </property>
          <property name="dragDropMode">
-          <enum>QAbstractItemView::NoDragDrop</enum>
+          <enum>QAbstractItemView::DragDrop</enum>
          </property>
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>true</bool>
-         </attribute>
-         <attribute name="verticalHeaderVisible">
-          <bool>true</bool>
-         </attribute>
-         <attribute name="verticalHeaderMinimumSectionSize">
-          <number>45</number>
-         </attribute>
-         <attribute name="verticalHeaderDefaultSectionSize">
-          <number>45</number>
          </attribute>
          <column>
           <property name="text">
@@ -318,160 +292,13 @@
          </column>
          <column>
           <property name="text">
-           <string>觸發指令</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>參數</string>
+           <string>名稱</string>
           </property>
          </column>
         </widget>
        </item>
-       <item row="1" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="pb_click_mouse">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>滑鼠操作</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pb_click_keyboard">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>鍵盤操作</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pb_screen_shot">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>螢幕截圖</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pb_img_check">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>圖像辨識</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QPushButton" name="pb_file_load">
-           <property name="text">
-            <string>讀取檔案</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pb_file_save">
-           <property name="text">
-            <string>儲存檔案</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="Line" name="line_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="page_3">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>664</width>
-        <height>401</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>運行紀錄</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QTextEdit" name="te_record">
-         <property name="font">
-          <font>
-           <family>微軟正黑體</family>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: white;</string>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
+        <widget class="QStackedWidget" name="lst_page"/>
        </item>
       </layout>
      </widget>
@@ -485,106 +312,14 @@
    <extends>QLineEdit</extends>
    <header>ui</header>
   </customwidget>
+  <customwidget>
+   <class>TriggerListWidget</class>
+   <extends>QTableWidget</extends>
+   <header>window.editor</header>
+  </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>pb_file_load</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>add_trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>115</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>79</x>
-     <y>-18</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pb_file_save</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>add_trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>177</x>
-     <y>120</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>170</x>
-     <y>-19</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pb_click_mouse</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>add_trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>88</x>
-     <y>166</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>166</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pb_click_keyboard</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>add_trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>144</x>
-     <y>167</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pb_screen_shot</sender>
-   <signal>clicked()</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>add_trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>295</x>
-     <y>173</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>6</x>
-     <y>122</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pb_img_check</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>ScriptEditor</receiver>
-   <slot>add_trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>379</x>
-     <y>175</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>237</x>
-     <y>-14</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>add_trigger()</slot>
  </slots>
