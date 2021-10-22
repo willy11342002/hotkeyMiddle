@@ -24,9 +24,9 @@ class PynputListener:
 
     def run_script(self):
         kwargs = Dict()
-        for row in range(self.editor.tb_script.rowCount()):
-            first = self.editor.tb_script.cellWidget(row, 0)
-            kwargs[str(row)] = first.activate(**kwargs)
+        for row in range(self.editor.lst_trigger.rowCount()):
+            manager = self.editor.lst_page.widget(row).manager
+            kwargs[str(row)] = manager.activate(**kwargs)
 
     # 鍵盤偵測
     def on_press(self, key):
@@ -57,11 +57,12 @@ class PynputListener:
 
 class Script(PynputListener):
     def __init__(self, mainwindow, path):
+        self.mainwindow = mainwindow
         # 實體化UI
         self.tree = FileLink(self, path)
         self.editor = Editor(self, path)
+        self.editor.read_data()
         # 儲存變數
-        self.mainwindow = mainwindow
         self.path = path
         # 創建資料夾(文件)
         if not self.path.exists():

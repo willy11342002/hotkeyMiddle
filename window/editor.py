@@ -34,7 +34,6 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
         self.setupUi(self)
         self.script = script
         self.path = path
-        self.read_data()
         self.lst_trigger.currentItemChanged.connect(
             lambda item: self.lst_page.setCurrentIndex(
                 self.lst_trigger.currentRow()
@@ -115,6 +114,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
 
     def check_saved(self):
         self.script.rename_tab_text(self.script.tab_text)
+        self.script.tree.setText(0, self.script.tab_text)
 
     # 腳本設計
     def move_up_trigger(self, manager):

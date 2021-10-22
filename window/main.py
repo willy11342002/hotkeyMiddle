@@ -112,9 +112,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         editor.save_data(path)
         self.main_script.setTabText(idx, editor.script.tab_text)
-        print(editor._data)
-        print(editor.data)
-        print(editor.data == editor._data)
 
     # 控制工具列是否可以保存
     def detect_savable(self):
