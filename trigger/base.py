@@ -27,6 +27,7 @@ class BaseTrigger:
                 value_widget = getattr(components, value.class_name).from_value(value)
                 self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.LabelRole, name_widget)
                 self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.FieldRole, value_widget)
+                value_widget.sig_current_changed.connect(self.manager.editor.check_saved)
                 setattr(self, key, value_widget)
 
         @property
@@ -51,6 +52,7 @@ class BaseTrigger:
     @property
     def data(self):
         return Dict({
+            'class_name': self.__class__.__name__,
             'rb_source_fixed': self.right.rb_source_fixed.isChecked(),
             'rb_source_variable': self.right.rb_source_variable.isChecked(),
             'le_source_fixed': self.right.le_source_fixed.text(),
@@ -96,6 +98,12 @@ class BaseTrigger:
         data = data or self.DIC_DEFAULT
         self.right = self.Trigger(self, data)
         self.data = data
+
+        # 綁定檢查是否修改功能
+        self.right.rb_source_fixed.toggled.connect(self.editor.check_saved)
+        self.right.rb_source_variable.toggled.connect(self.editor.check_saved)
+        self.right.le_source_fixed.textChanged.connect(self.editor.check_saved)
+        self.right.le_source_variable.textChanged.connect(self.editor.check_saved)
 
     def activate(self, *args, **kwargs):
         pass

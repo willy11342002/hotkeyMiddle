@@ -72,17 +72,17 @@ class Script(PynputListener):
 
         # 修改內容顯示於標題列
         self.editor.ccb_activate.currentIndexChanged.connect(
-            lambda idx: self.rename_tab_text(self.tab_text))
+            lambda idx: self.editor.check_saved())
         self.editor.le_start_hotkey.textChanged.connect(
-            lambda idx: self.rename_tab_text(self.tab_text))
+            lambda idx: self.editor.check_saved())
         self.editor.le_stop_hotkey.textChanged.connect(
-            lambda idx: self.rename_tab_text(self.tab_text))
+            lambda idx: self.editor.check_saved())
         self.editor.te_descript.textChanged.connect(
-            lambda idx: self.rename_tab_text(self.tab_text))
+            lambda idx: self.editor.check_saved())
         self.editor.rb_once.toggled.connect(
-            lambda idx: self.rename_tab_text(self.tab_text))
+            lambda idx: self.editor.check_saved())
         self.editor.rb_while.toggled.connect(
-            lambda idx: self.rename_tab_text(self.tab_text))
+            lambda idx: self.editor.check_saved())
 
     @property
     def tab_text(self) -> str:
@@ -100,7 +100,7 @@ class Script(PynputListener):
             # 改檔案總管名稱
             self.tree.setText(0, self.tab_text)
             # 改頁籤名稱
-            self.rename_tab_text(self.tab_text)
+            self.editor.check_saved()
         except AttributeError:
             pass
 

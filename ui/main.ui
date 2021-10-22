@@ -156,30 +156,6 @@
        </column>
        <item>
         <property name="text">
-         <string>變數</string>
-        </property>
-        <property name="flags">
-         <set>ItemIsSelectable|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
-        </property>
-        <item>
-         <property name="text">
-          <string>文字</string>
-         </property>
-         <property name="whatsThis">
-          <string notr="true">StringVariableTrigger</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>整數</string>
-         </property>
-         <property name="whatsThis">
-          <string notr="true">IntergerVariableTrigger</string>
-         </property>
-        </item>
-       </item>
-       <item>
-        <property name="text">
          <string>檔案</string>
         </property>
         <property name="flags">

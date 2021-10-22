@@ -78,6 +78,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             path = path or Path('data') / f'新增類別'
 
+        if not path.exists():
+            path.mkdir()
         script = Script(self, path)
         self.tree_files.addTopLevelItem(script.tree)
 
@@ -97,13 +99,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             path = path or parent.path / f'新增腳本.ini'
 
+        if not path.exists():
+            path.touch()
+
         script = Script(self, path)
         parent.addChild(script.tree)
 
     # 儲存檔案
     def save_script(self, path: Path=None):
         editor = self.main_script.currentWidget()
+        idx = self.main_script.indexOf(editor)
+
         editor.save_data(path)
+        self.main_script.setTabText(idx, editor.script.tab_text)
+        print(editor._data)
+        print(editor.data)
+        print(editor.data == editor._data)
 
     # 控制工具列是否可以保存
     def detect_savable(self):

@@ -61,7 +61,10 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
                 'category': category
             },
             'SCRIPT': {
-                'content': []
+                'content': [
+                    self.lst_page.widget(row).manager.data
+                    for row in range(self.lst_trigger.rowCount())
+                ]
             },
         })
     @data.setter
@@ -76,6 +79,8 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
             self.rb_once.click()
         else:
             self.rb_while.click()
+        for d in data.SCRIPT.content:
+            self.add_trigger(class_name=d.class_name, data=d)
 
     @property
     def path(self) -> Path:
@@ -83,6 +88,10 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     @path.setter
     def path(self, path):
         self.script.path = path
+
+    @property
+    def tab_text(self):
+        return self.script.tab_text
 
     # 腳本內容存讀
     def compare_data(self) -> bool:
@@ -102,6 +111,10 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     def save_data(self, path=None):
         path = path or self.path
         self.data.dump_json(path)
+        self._data = self.data
+
+    def check_saved(self):
+        self.script.rename_tab_text(self.script.tab_text)
 
     # 腳本設計
     def move_up_trigger(self, manager):
@@ -124,6 +137,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
         self.lst_trigger.removeRow(manager.row)
         self.lst_page.removeWidget(manager.right)
         self.reset_index()
+        self.check_saved()
     def add_trigger(self, class_name, row=None, data=None):
         Manager = getattr(trigger, class_name, None)
         if not Manager:
@@ -161,6 +175,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
 
             if row+1 == self.lst_trigger.rowCount():
                 manager.pb_move_down.setDisabled(True)
+        self.check_saved()
 
 
 class EditorTabWidget(QtWidgets.QTabWidget):

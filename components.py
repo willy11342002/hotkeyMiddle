@@ -6,6 +6,10 @@ import pynput
 
 
 class ComboBox(QtWidgets.QComboBox):
+    sig_current_changed = QtCore.pyqtSignal()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.currentIndexChanged.connect(self.sig_current_changed.emit)
     @classmethod
     def from_value(cls, value):
         obj = cls()
@@ -21,9 +25,10 @@ class ComboBox(QtWidgets.QComboBox):
 
 
 class FileEdit(QtWidgets.QPushButton):
-    textChanged = QtCore.pyqtSignal(str)
+    sig_current_changed = QtCore.pyqtSignal()
     def __init__(self):
         super().__init__()
+        self.textChanged.connect(self.sig_current_changed.emit)
         self.clicked.connect(self.choose_path)
 
     @classmethod
@@ -47,7 +52,6 @@ class FileEdit(QtWidgets.QPushButton):
     def path(self, p):
         self._path = p
         self.setText(str(p.absolute()))
-        self.textChanged.emit(str(p.absolute()))
 
     def choose_path(self):
         filename, ok = getattr(QtWidgets.QFileDialog, self.method)(
@@ -59,9 +63,11 @@ class FileEdit(QtWidgets.QPushButton):
 
 class HotKeyEdit(QtWidgets.QLineEdit):
     _PRESSED_KEY = set()
+    sig_current_changed = QtCore.pyqtSignal()
     def __init__(self, master=None, single_mode=False, *args, **kwargs):
         self.single_mode = single_mode
         super().__init__(master, *args, **kwargs)
+        self.textChanged.connect(self.sig_current_changed.emit)
         self.setAttribute(QtCore.Qt.WA_InputMethodEnabled, False)
 
     @property
