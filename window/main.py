@@ -108,10 +108,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # 儲存檔案
     def save_script(self, path: Path=None):
         editor = self.main_script.currentWidget()
-        idx = self.main_script.indexOf(editor)
-
         editor.save_data(path)
-        self.main_script.setTabText(idx, editor.script.tab_text)
+        editor.check_saved()
 
     # 控制工具列是否可以保存
     def detect_savable(self):
