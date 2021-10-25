@@ -160,7 +160,7 @@ class Ui_ScriptEditor(object):
         self.verticalLayout.addWidget(self.tabWidget)
 
         self.retranslateUi(ScriptEditor)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ScriptEditor)
 
     def retranslateUi(self, ScriptEditor):

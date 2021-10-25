@@ -34,7 +34,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
         self.setupUi(self)
         self.script = script
         self.path = path
-        self.lst_trigger.currentItemChanged.connect(
+        self.lst_trigger.itemDoubleClicked.connect(
             lambda item: self.lst_page.setCurrentIndex(
                 self.lst_trigger.currentRow()
             ))

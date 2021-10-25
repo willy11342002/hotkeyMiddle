@@ -97,6 +97,7 @@ class BaseTrigger:
         # 腳本詳細內容
         data = data or self.DIC_DEFAULT
         self.right = self.Trigger(self, data)
+        self.right.le_source_variable.right = self.right
         self.data = data
 
         # 綁定檢查是否修改功能
@@ -104,6 +105,10 @@ class BaseTrigger:
         self.right.rb_source_variable.toggled.connect(self.editor.check_saved)
         self.right.le_source_fixed.textChanged.connect(self.editor.check_saved)
         self.right.le_source_variable.textChanged.connect(self.editor.check_saved)
+        self.right.le_source_fixed.textChanged.connect(
+            lambda txt: self.right.rb_source_fixed.setChecked(True))
+        self.right.le_source_variable.textChanged.connect(
+            lambda txt: self.right.rb_source_variable.setChecked(True))
 
     def activate(self, *args, **kwargs):
         pass
