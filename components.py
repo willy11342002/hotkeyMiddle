@@ -5,6 +5,24 @@ from utils.vk import VK
 import pynput
 
 
+class SpinBox(QtWidgets.QSpinBox):
+    sig_current_changed = QtCore.pyqtSignal()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.valueChanged.connect(self.sig_current_changed.emit)
+    @classmethod
+    def from_value(cls, value):
+        obj = cls()
+        obj.setValue(value.default)
+        return obj
+    @property
+    def current(self):
+        return self.value()
+    @current.setter
+    def current(self, value):
+        self.setValue(value)
+
+
 class ComboBox(QtWidgets.QComboBox):
     sig_current_changed = QtCore.pyqtSignal()
     def __init__(self, *args, **kwargs):

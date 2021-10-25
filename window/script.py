@@ -57,6 +57,7 @@ class PynputListener:
 
 class Script(PynputListener):
     def __init__(self, mainwindow, path):
+        super().__init__()
         self.mainwindow = mainwindow
         # 實體化UI
         self.tree = FileLink(self, path)

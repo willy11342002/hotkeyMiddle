@@ -31,3 +31,28 @@ class MouseClickTrigger(BaseTrigger):
         button = dic_buttons[self.button.currentIndex()]
         count = self.times.currentIndex() + 1
         self.controller.click(button, count)
+
+
+class MouseScrollTrigger(BaseTrigger):
+    controller = pynput.mouse.Controller()
+    TITLE = '滾動滑鼠'
+    INFORMATION = (
+        '來源(str)： 無\n\n'
+        '方向:  選擇向上滾動，滾輪向上滾動\n'
+        '　　   選擇向下滾動，滾輪向下滾動\n\n'
+        '滾動次數:  輸入要滾動的次數'
+    )
+    DIC_DEFAULT = Dict({
+        **BaseTrigger.DIC_DEFAULT,
+        'other': {
+            'forward': {'class_name': 'ComboBox', 'name': '方向', 'choices': ['向上滾動', '向下滾動'], 'default': 0},
+            'step': {'class_name': 'SpinBox', 'name': '滾動次數', 'default': 0},
+        }
+    })
+
+    def activate(self, *args, **kwargs):
+        if self.forward.currentIndex() == 0:
+            forward = 1
+        else:
+            forward = -1
+        self.controller.scroll(0, forward*self.step.value())

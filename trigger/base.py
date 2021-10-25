@@ -7,6 +7,7 @@ import components
 class BaseTrigger:
     TITLE = ''
     INFORMATION = ''
+    NEED_SOURCE = False
     DIC_DEFAULT = Dict({
         'rb_source_fixed': True,
         'rb_source_variable': False,
@@ -29,6 +30,10 @@ class BaseTrigger:
                 self.formLayout_2.setWidget(i, QtWidgets.QFormLayout.FieldRole, value_widget)
                 value_widget.sig_current_changed.connect(self.manager.editor.check_saved)
                 setattr(self, key, value_widget)
+                setattr(self.manager, key, value_widget)
+            for key in ['rb_source_fixed', 'le_source_fixed', 'rb_source_variable', 'le_source_variable']:
+                value_widget = getattr(self, key)
+                setattr(self.manager, key, value_widget)
 
         @property
         def row(self):
@@ -53,13 +58,13 @@ class BaseTrigger:
     def data(self):
         return Dict({
             'class_name': self.__class__.__name__,
-            'rb_source_fixed': self.right.rb_source_fixed.isChecked(),
-            'rb_source_variable': self.right.rb_source_variable.isChecked(),
-            'le_source_fixed': self.right.le_source_fixed.text(),
-            'le_source_variable': self.right.le_source_variable.text(),
+            'rb_source_fixed': self.rb_source_fixed.isChecked(),
+            'rb_source_variable': self.rb_source_variable.isChecked(),
+            'le_source_fixed': self.le_source_fixed.text(),
+            'le_source_variable': self.le_source_variable.text(),
             'other': {
                 key: {
-                    k: v if k != 'default' else getattr(self.right, key).current
+                    k: v if k != 'default' else getattr(self, key).current
                     for k, v in value.items()
                 }
                 for key, value in self.DIC_DEFAULT.other.items()
@@ -97,6 +102,11 @@ class BaseTrigger:
         # 腳本詳細內容
         data = data or self.DIC_DEFAULT
         self.right = self.Trigger(self, data)
+        if not self.NEED_SOURCE:
+            self.right.rb_source_fixed.setDisabled(True)
+            self.right.rb_source_variable.setDisabled(True)
+            self.right.le_source_fixed.setDisabled(True)
+            self.right.le_source_variable.setDisabled(True)
         self.right.le_source_variable.right = self.right
         self.data = data
 

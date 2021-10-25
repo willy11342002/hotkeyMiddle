@@ -4,6 +4,7 @@ from PyQt5 import QtCore
 
 from utils.path import Dict
 import trigger
+import json
 
 
 class TriggerListWidget(QtWidgets.QTableWidget):
@@ -78,8 +79,8 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
             self.rb_once.click()
         else:
             self.rb_while.click()
-        for d in data.SCRIPT.content:
-            self.add_trigger(class_name=d.class_name, data=d)
+        for i, d in enumerate(data.SCRIPT.content):
+            self.add_trigger(class_name=d.class_name, data=d, row=i)
 
     @property
     def path(self) -> Path:
@@ -98,18 +99,20 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     def reset_data(self):
         self.data = self._data
     def init_data(self):
-        self.data.dump_json(self.path)
+        with self.path.open('w', encoding='utf8') as f:
+            json.dump(self.data, f, ensure_ascii=False)
     def read_data(self):
         if self.path.is_dir():
             return
-        if not self.path.read_text():
+        if not self.path.read_text(encoding='utf8'):
             self.init_data()
             return
         # 讀取資料
-        self.data = Dict.load_json(self.path)
+        self.data = Dict.load_json(self.path, encoding='utf8')
     def save_data(self, path=None):
         path = path or self.path
-        self.data.dump_json(path)
+        with path.open('w', encoding='utf8') as f:
+            json.dump(self.data, f, ensure_ascii=False)
         self._data = self.data
 
     def check_saved(self):
