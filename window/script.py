@@ -79,7 +79,7 @@ class Script(PynputListener):
         self.editor.le_stop_hotkey.textChanged.connect(
             lambda idx: self.editor.check_saved())
         self.editor.te_descript.textChanged.connect(
-            lambda idx: self.editor.check_saved())
+            lambda: self.editor.check_saved())
         self.editor.rb_once.toggled.connect(
             lambda idx: self.editor.check_saved())
         self.editor.rb_while.toggled.connect(
