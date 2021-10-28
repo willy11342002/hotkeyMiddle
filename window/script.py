@@ -23,6 +23,7 @@ class PynputListener:
         self.mouse_listener.start()
 
     def run_script(self):
+        print('start')
         kwargs = Dict()
         for row in range(self.editor.lst_trigger.rowCount()):
             manager = self.editor.lst_page.widget(row).manager

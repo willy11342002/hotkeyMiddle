@@ -112,7 +112,7 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
     def save_data(self, path=None):
         path = path or self.path
         with path.open('w', encoding='utf8') as f:
-            json.dump(self.data, f, ensure_ascii=False)
+            json.dump(self.data, f, ensure_ascii=False, indent=4)
         self._data = self.data
 
     def check_saved(self):

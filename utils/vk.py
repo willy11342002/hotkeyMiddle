@@ -32,12 +32,14 @@ class VK:
             return key.nativeVirtualKey()
         # pynput物件
         vk = getattr(key, 'vk', None)
-        if not vk:
+        if not vk and getattr(key, '_name_', None):
             vk = {
                 'alt_l': 18, 'alt_r': 18,
                 'shift_l': 16, 'shift_r': 16,
                 'ctrl_l': 17, 'ctrl_r': 17,
             }.get(key._name_)
-        if not vk:
+        if not vk and getattr(key, '_value_', None):
             vk = key._value_.vk
+        if not vk:
+            vk = cls.get_vk_from_string(key.char)
         return vk
