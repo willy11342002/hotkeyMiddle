@@ -41,7 +41,7 @@ class ArgsWidget(QtWidgets.QWidget):
         })
     @current.setter
     def current(self, value):
-        self.ccb_source.setCurrentIndex(value.source or 0)
+        self.ccb_source.setCurrentIndex(value.source or value.default or 0)
         self.value_widget.current = value.fixed
         self.le_source_variable.setText(str(value.variable))
 

@@ -1,5 +1,6 @@
 from utils.path import Dict
 from .base import BaseTrigger
+import pyautogui
 import pynput
 
 
@@ -63,3 +64,21 @@ class MouseScrollTrigger(BaseTrigger):
         else:
             forward = -1
         self.controller.scroll(0, forward*sources.step)
+
+
+class MouseMoveTrigger(BaseTrigger):
+    controller = pynput.mouse.Controller()
+    TITLE = '滑鼠移動'
+    INFORMATION = '將滑鼠移動至指定位置'
+    DIC_DEFAULT = Dict({
+        **BaseTrigger.DIC_DEFAULT,
+        'other': {
+            'pos': {
+                'class_name': 'PositionBox', 'name': '座標',
+                'source': 0, 'fixed': [0, 0], 'variable': '0'},
+        }
+    })
+
+    def activate(self, *args, **kwargs):
+        sources = super().activate(*args, **kwargs)
+        pyautogui.moveTo(*sources.pos)

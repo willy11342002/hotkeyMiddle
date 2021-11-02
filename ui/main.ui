@@ -251,7 +251,7 @@
         </item>
         <item>
          <property name="text">
-          <string>圖像辨識</string>
+          <string>圖片定位</string>
          </property>
          <property name="whatsThis">
           <string notr="true">ScreenCheckTrigger</string>

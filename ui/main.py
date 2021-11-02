@@ -186,7 +186,7 @@ class Ui_MainWindow(object):
         self.tree_scripts.topLevelItem(2).child(1).setText(0, _translate("MainWindow", "按下快速鍵"))
         self.tree_scripts.topLevelItem(3).setText(0, _translate("MainWindow", "圖像"))
         self.tree_scripts.topLevelItem(3).child(0).setText(0, _translate("MainWindow", "螢幕截圖"))
-        self.tree_scripts.topLevelItem(3).child(1).setText(0, _translate("MainWindow", "圖像辨識"))
+        self.tree_scripts.topLevelItem(3).child(1).setText(0, _translate("MainWindow", "圖片定位"))
         self.tree_scripts.topLevelItem(4).setText(0, _translate("MainWindow", "剪貼簿"))
         self.tree_scripts.topLevelItem(4).child(0).setText(0, _translate("MainWindow", "複製"))
         self.tree_scripts.topLevelItem(4).child(1).setText(0, _translate("MainWindow", "貼上"))
