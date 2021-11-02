@@ -18,6 +18,7 @@ class TriggerListWidget(QtWidgets.QTableWidget):
 
 from ui.editor import Ui_ScriptEditor
 class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
+    sig_reload_log_list = QtCore.pyqtSignal()
     _data = Dict({
         'BASIC': {
             'activate': False,
@@ -41,6 +42,10 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
             ))
         self.lst_trigger.sig_drop_new.connect(
             lambda class_name: self.add_trigger(class_name=class_name))
+        self.lst_log.itemDoubleClicked.connect(self.fn_show_log)
+        self.sig_reload_log_list.connect(self.fn_reload_log_list)
+        if not self.path.is_dir():
+            self.fn_reload_log_list()
 
     @property
     def data(self) -> Dict:
@@ -180,6 +185,15 @@ class Editor(QtWidgets.QWidget, Ui_ScriptEditor):
                 manager.pb_move_down.setDisabled(True)
         self.check_saved()
 
+    def fn_reload_log_list(self):
+        self.lst_log.clear()
+        self.lst_log.addItems(
+            map(lambda p: p.stem,
+            Path(f'log/{self.path.parent.name}/{self.path.stem}').iterdir()))
+    def fn_show_log(self, item):
+        log_path = Path(f'log/{self.path.parent.name}/{self.path.stem}/{item.text()}.log') 
+        txt = log_path.read_text(encoding='utf8')
+        self.te_log.setText(txt)
 
 class EditorTabWidget(QtWidgets.QTabWidget):
     def __init__(self, *args, **kwargs):

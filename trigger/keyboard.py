@@ -1,5 +1,6 @@
 from utils.path import Dict
 from .base import BaseTrigger
+import traceback
 import pynput
 
 
@@ -18,10 +19,17 @@ class KeyboardClickTrigger(BaseTrigger):
         }
     })
 
-    def activate(self, *args, **kwargs):
-        for key in self.keys.value_widget._PRESSED_KEY:
-            self.controller.press(key)
-            self.controller.release(key)
+    def activate(self, logger, *args, **kwargs):
+        try:
+            logger.info(f'【{self.TITLE}】')
+            logger.info(f'點擊{self.keys.value_widget.PRESSED_KEY_STR}')
+            for key in self.keys.value_widget._PRESSED_KEY:
+                self.controller.press(key)
+                self.controller.release(key)
+            logger.info('執行成功。')
+        except:
+            logger.info('執行失敗。')
+            logger.critical('\n' + traceback.format_exc())
 
 
 class HotkeyClickTrigger(BaseTrigger):
@@ -40,8 +48,15 @@ class HotkeyClickTrigger(BaseTrigger):
         }
     })
 
-    def activate(self, *args, **kwargs):
-        for key in self.keys.value_widget._PRESSED_KEY:
-            self.controller.press(key)
-        for key in self.keys.value_widget._PRESSED_KEY:
-            self.controller.release(key)
+    def activate(self, logger, *args, **kwargs):
+        try:
+            for key in self.keys.value_widget._PRESSED_KEY:
+                self.controller.press(key)
+            for key in self.keys.value_widget._PRESSED_KEY:
+                self.controller.release(key)
+            logger.info(f'【{self.TITLE}】')
+            logger.info(f'點擊{self.keys.value_widget.PRESSED_KEY_STR}')
+            logger.info('執行成功。')
+        except:
+            logger.info('執行失敗。')
+            logger.critical('\n' + traceback.format_exc())

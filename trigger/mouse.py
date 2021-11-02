@@ -1,5 +1,6 @@
 from utils.path import Dict
 from .base import BaseTrigger
+import traceback
 import pyautogui
 import pynput
 
@@ -26,16 +27,24 @@ class MouseClickTrigger(BaseTrigger):
         }
     })
 
-    def activate(self, *args, **kwargs):
-        dic_buttons = dict(enumerate([
-            pynput.mouse.Button.left,
-            pynput.mouse.Button.middle,
-            pynput.mouse.Button.right,
-        ]))
-        sources = super().activate(*args, **kwargs)
-        button = dic_buttons[sources.button]
-        count = sources.times + 1
-        self.controller.click(button, count)
+    def activate(self, logger, *args, **kwargs):
+        try:
+            sources = super().activate(*args, **kwargs)
+            dic_buttons = dict(enumerate([
+                pynput.mouse.Button.left,
+                pynput.mouse.Button.middle,
+                pynput.mouse.Button.right,
+            ]))
+            button = dic_buttons[sources.button]
+            count = sources.times + 1
+            self.controller.click(button, count)
+
+            logger.info(f'【{self.TITLE}】')
+            logger.info(f'點擊{self.DIC_DEFAULT.other.button.choices[sources.button]}'f'{count}次')
+            logger.info('執行成功。')
+        except:
+            logger.info('執行失敗。')
+            logger.critical('\n' + traceback.format_exc())
 
 
 class MouseScrollTrigger(BaseTrigger):
@@ -57,13 +66,20 @@ class MouseScrollTrigger(BaseTrigger):
         }
     })
 
-    def activate(self, *args, **kwargs):
-        sources = super().activate(*args, **kwargs)
-        if sources.forward == 0:
-            forward = 1
-        else:
-            forward = -1
-        self.controller.scroll(0, forward*sources.step)
+    def activate(self, logger, *args, **kwargs):
+        try:
+            sources = super().activate(*args, **kwargs)
+            logger.info(f'【{self.TITLE}】')
+            logger.info(f'{self.DIC_DEFAULT.other.forward.choices[sources.forward]}'f'{sources.step}次')
+            if sources.forward == 0:
+                forward = 1
+            else:
+                forward = -1
+            self.controller.scroll(0, forward*sources.step)
+            logger.info('執行成功。')
+        except:
+            logger.info('執行失敗。')
+            logger.critical('\n' + traceback.format_exc())
 
 
 class MouseMoveTrigger(BaseTrigger):
@@ -79,6 +95,13 @@ class MouseMoveTrigger(BaseTrigger):
         }
     })
 
-    def activate(self, *args, **kwargs):
-        sources = super().activate(*args, **kwargs)
-        pyautogui.moveTo(*sources.pos)
+    def activate(self, logger, *args, **kwargs):
+        try:
+            sources = super().activate(*args, **kwargs)
+            pyautogui.moveTo(*sources.pos)
+            logger.info(f'【{self.TITLE}】')
+            logger.info(f'將滑鼠移動至{sources.pos}位置')
+            logger.info('執行成功。')
+        except:
+            logger.info('執行失敗。')
+            logger.critical('\n' + traceback.format_exc())

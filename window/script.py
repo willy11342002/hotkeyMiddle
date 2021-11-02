@@ -3,7 +3,9 @@ from window.file_explorer import FileLink
 from window.editor import Editor
 from utils.path import Dict
 from utils.vk import VK
+from datetime import datetime
 from pathlib import Path
+import logging
 import pynput
 
 
@@ -23,11 +25,12 @@ class PynputListener:
         self.mouse_listener.start()
 
     def run_script(self):
-        print('start')
         kwargs = Dict()
+        logger = self.get_logger()
         for row in range(self.editor.lst_trigger.rowCount()):
             manager = self.editor.lst_page.widget(row).manager
-            kwargs[str(row)] = manager.activate(**kwargs)
+            kwargs[str(row)] = manager.activate(logger, **kwargs)
+            logger.info('=============================')
 
     # 鍵盤偵測
     def on_press(self, key):
@@ -60,6 +63,13 @@ class Script(PynputListener):
     def __init__(self, mainwindow, path):
         super().__init__()
         self.mainwindow = mainwindow
+        if not path.is_dir():
+            if not Path(f'log').exists():
+                Path(f'log').mkdir()
+            if not Path(f'log/{path.parent.name}').exists():
+                Path(f'log/{path.parent.name}').mkdir()
+            if not Path(f'log/{path.parent.name}/{path.stem}').exists():
+                Path(f'log/{path.parent.name}/{path.stem}').mkdir()
         # 實體化UI
         self.tree = FileLink(self, path)
         self.editor = Editor(self, path)
@@ -106,6 +116,33 @@ class Script(PynputListener):
             self.editor.check_saved()
         except AttributeError:
             pass
+
+    def get_logger(self, now=None):
+        now = now or datetime.now().strftime(r'%Y%m%d_%H%M%S')
+        log_path = Path('log') / self.path.parent.name / f'{self.path.stem}' / f'{now}.log'
+        fmt = logging.Formatter(
+            '%(asctime)s %(levelname)7s [%(filename)10s:%(lineno)4s - %(funcName)15s()] %(message)s',
+            datefmt=r'%Y-%m-%d %H:%M:%S'
+        )
+
+        if not log_path.exists():
+            self.editor.sig_reload_log_list.emit()
+
+        logger = logging.getLogger(f'{self.path.stem}_{now}')
+
+        filehdlr = logging.FileHandler(log_path, encoding='utf-8')
+        cnshdlr = logging.StreamHandler()
+
+        logger.addHandler(filehdlr)
+        logger.addHandler(cnshdlr)
+
+        filehdlr.setFormatter(fmt)
+        cnshdlr.setFormatter(fmt)
+
+        logger.setLevel(logging.DEBUG)
+        cnshdlr.setLevel(logging.DEBUG)
+        filehdlr.setLevel(logging.INFO)
+        return logger
 
     # 修改頁籤名稱
     def rename_tab_text(self, tab_text):

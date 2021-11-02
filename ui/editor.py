@@ -161,7 +161,7 @@ class Ui_ScriptEditor(object):
         self.tab_3.setObjectName("tab_3")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.tab_3)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.lst_log = QtWidgets.QListView(self.tab_3)
+        self.lst_log = QtWidgets.QListWidget(self.tab_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

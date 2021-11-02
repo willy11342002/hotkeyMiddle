@@ -2,6 +2,7 @@ from utils.path import Dict
 from .base import BaseTrigger
 from PIL import ImageGrab
 import pyautogui
+import traceback
 import win32con
 import win32api
 
@@ -16,8 +17,14 @@ class PrintScreenTrigger(BaseTrigger):
         }
     })
 
-    def activate(self, *args, **kwargs):
-        return ImageGrab.grab(all_screens=1)
+    def activate(self, logger, *args, **kwargs):
+        try:
+            img = ImageGrab.grab(all_screens=1)
+            logger.info(f'【{self.TITLE}】，執行成功。')
+            return img
+        except:
+            logger.info(f'【{self.TITLE}】，執行失敗。')
+            logger.critical('\n' + traceback.format_exc())
 
 
 class ScreenCheckTrigger(BaseTrigger):
@@ -59,20 +66,26 @@ class ScreenCheckTrigger(BaseTrigger):
         pyautogui.moveTo(_x, _y)
         return x, y
 
-    def activate(self, *args, **kwargs):
-        sources = super().activate(*args, **kwargs)
-        x, y = self.get_top_left(
-            win32api.GetSystemMetrics(win32con.SM_CMONITORS))
-        print(sources)
-        pos = pyautogui.locate(
-            sources.target_img,
-            sources.source_img,
-            grayscale=bool(sources.grayscale),
-            confidence=sources.confidence,
-        )
-        print(pos)
-        pos = pyautogui.center(pos)
-        pos = (pos[0] + x, pos[1] + y)
-        print(pos)
-        return pos
+    def activate(self, logger, *args, **kwargs):
+        try:
+            logger.info(f'【{self.TITLE}】')
+            sources = super().activate(*args, **kwargs)
+            x, y = self.get_top_left(
+                win32api.GetSystemMetrics(win32con.SM_CMONITORS))
+            logger.info(f'螢幕定位最左上角為：{(x, y)}')
+            pos = pyautogui.locate(
+                sources.target_img,
+                sources.source_img,
+                grayscale=bool(sources.grayscale),
+                confidence=sources.confidence,
+            )
+            logger.info(f'目標圖片位置定位為：{pos}')
+            pos = pyautogui.center(pos)
+            pos = (pos[0] + x, pos[1] + y)
+            logger.info(f'目標圖片中心點定位為：{pos}')
+            logger.info(f'執行成功。')
+            return pos
+        except:
+            logger.info(f'執行失敗。')
+            logger.critical('\n' + traceback.format_exc())
 
